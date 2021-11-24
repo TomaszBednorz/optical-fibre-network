@@ -33,27 +33,47 @@ class OpticalFibre:
 
 
 class Edge:  
-    def __init__(self, node_start: Node, node_end: Node, edge_type: FiberType) -> None:  # other_nodes: Node
+    def __init__(self, node_start: Node, node_end: Node, edge_type: FiberType, identifier: int) -> None:  # other_nodes: Node
         
         self.start = node_start         # The begining of the edge, class Node (always type = NodeType.BUILDING)
         self.end = node_end             # The end of the edge, class Node (always type = NodeType.BUILDING)
-        #self.other = other_nodes        # Other nodes in this edge, e.g. NodeType.POLE
+        #self.other = other_nodes       # Other nodes in this edge, e.g. NodeType.POLE
         self.type = edge_type           # Type of the edge, e.g. FiberType.SEWERAGE
-        
-        # self.id = 
-        # self.distance = edge_distance   # Distance in [m], e.g. 42.42
-        # dodac 
+        self.id = identifier            # Number, every edge have different id, e.g. 4
+        self.distance = self.calculate_distance()   # Distance in [m], e.g. 42.42
+    
+    def calculate_distance() -> float:
+        return 0  # TODO: Distance by self.start and self.end
         
 
 class Network:
     def __init__(self) -> None:
         self.buildings = []
         self.poles = []
-        self.edges = []
+        self.edges = []  # adjacency list
 
     def add_building(self, vert_coord: float, hori_coord: float, id: int):
         self.buildings.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
 
-    # def remove_building(self,)
+    def remove_building(self, id: int):
+        for idx, building in enumerate(self.buildings):
+            if building.id == id:
+                del self.buildings[idx]
+                break
+    
+    def add_pole(self, vert_coord: float, hori_coord: float, id: int):
+        self.poles.append(Node(vert_coord, hori_coord, id, NodeType.POLE))
+
+    def remove_pole(self, id: int):
+        for idx, pole in enumerate(self.poles):
+            if pole.id == id:
+                del self.poles[idx]
+                break
+    
+    def add_edge():
+        pass
+
+    def remove_edge():
+        pass
 
 
