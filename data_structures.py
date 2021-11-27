@@ -8,30 +8,8 @@ class NodeType(Enum):
 
 class FiberType(Enum):
     UNIVERSAL = 0
-    UVERHEAD = 1
+    OVERHEAD = 1
     SEWERAGE = 2
-
-
-class OpticalFibreName(Enum):
-    A = 0
-    B = 1
-    C = 2
-    D = 3
-    E = 4
-    F = 5
-    G = 6
-    H = 7
-    I = 8
-    J = 9
-    K = 10
-
-
-class DeviceName(Enum):
-    A = 0
-    B = 1
-    C = 2
-    D = 3
-    E = 4
 
 
 # Node can be a building or pole
@@ -44,19 +22,19 @@ class Node:
 
 
 class OpticalFibre:
-    def __init__(self, cost: float, fibers_amount: int, fiber_type: FiberType, fiber_name: str) -> None:
+    def __init__(self, cost: float, fibers_amount: int, fiber_type: FiberType, identifier: int) -> None:
         self.price = cost                   # Price in [zl] e.g. 7.44 
         self.fib_amount = fibers_amount     # The amount of fibers, e.g. 8
         self.type = fiber_type              # The type of the optical-fiber, enum FiberType , e.g. FiberType.UVERHEAD
-        self.name = fiber_name              # The name of the optical-fiber, OpticalFibreName.A
+        self.id = identifier                # Number, e.g. 3
 
 
 class Device:
-    def __init__(self, cost: float, buildings_amount: int, device_name: OpticalFibreName) -> None:
+    def __init__(self, cost: float, buildings_amount: int, identifier: int) -> None:
         self.price = cost                   # Price in [zl] e.g. 325.44 
         self.amount = buildings_amount      # Number of buildings that can be connected to the device, e.g. 16
-        self.name = device_name             # The name of the device, e.g. DeviceName.A
-
+        self.id = identifier                # Number, e.g. 2
+        self.idx = None                     # Number, devices can't have the same idx in one network
 
 class Edge:  
     def __init__(self, node_start: Node, node_end: Node, edge_type: FiberType, optical_fibre_type: OpticalFibre, identifier: int) -> None:  # other_nodes: Node
@@ -91,10 +69,10 @@ class Network:
 
         self.INSTALATION_COST = 50  # [zl]
 
-    def add_building(self, vert_coord: float, hori_coord: float, id: int):  # TODO: this method update the cost (Installation cost)
+    def add_building(self, vert_coord: float, hori_coord: float, id: int):
         self.buildings.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
 
-    def remove_building(self, id: int):  # TODO: this method update the cost (Installation cost)
+    def remove_building(self, id: int):
         for idx, building in enumerate(self.buildings):
             if building.id == id:
                 del self.buildings[idx]
@@ -110,18 +88,29 @@ class Network:
                 break
     
     def add_device(self, device: Device):
-        
-
-
+        idx = 1
+        for dev in self.devices:
+            if dev.idx == idx:
+                idx += 1
+            else:
+                break
+        device.idx = idx
         self.devices.append(device)
             
+    def remove_device(self, id):
+        for idx, device in enumerate(self.devices):
+            if device.id == id:
+                del self.devices[idx]
+                break       
 
-    def add_edge(): # 2 edges on one time, this method update the cost 
+    def add_edge(self):
         pass
 
-    def remove_edge(): # 2 edges on one time, this method update the cost 
+    def remove_edge(self):
         pass
 
+    def calculate_objective_function(self):  # Edges, devices, instalation cost, etc.
+        return 0 
 
-
-
+    def check_network(self):  # Devices, fibres (2 for 1 building), etc.
+        return False
