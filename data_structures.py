@@ -112,5 +112,5 @@ class Network:
     def calculate_objective_function(self):  # Edges, devices, instalation cost, etc.
         return 0 
 
-    def check_network(self):  # Devices, fibres (2 for 1 building), etc.
+    def check_network_correctness(self):  # Devices, fibres (2 for 1 building), etc.
         return False
