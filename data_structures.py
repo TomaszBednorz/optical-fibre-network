@@ -83,11 +83,11 @@ class Edge:
 
 class Network:
     def __init__(self) -> None:
-        self.buildings = []
-        self.poles = []
-        self.edges = []  # adjacency list
-        self.devices = []
-        self.cost = 0
+        self.buildings = []   # Buildings in network
+        self.poles = []       # Poles in network
+        self.edges = []       # Edges in graph, adjacency list
+        self.devices = []     # Devices in network 
+        self.cost = 0         # Cost of the network
 
         self.INSTALATION_COST = 50  # [zl]
 
