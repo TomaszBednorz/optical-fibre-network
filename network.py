@@ -70,7 +70,9 @@ pole_13 = Node(50.165107809337634, 19.62349144006858,9013,NodeType.POLE)
 pole_14 = Node(50.164818965739734, 19.623433411706582,9014,NodeType.POLE)
 list_p = [pole_1,pole_2,pole_3,pole_4,pole_5,pole_6,pole_7,pole_8,pole_9,pole_10,pole_11,pole_12,pole_13,pole_14]
 
-
+# Just for test calculate_distance
+# e_1 = Edge(pole_1,pole_14,FiberType.SEWERAGE,of_universal_1,1)
+# print(e_1.distance)
 
 def add_poles_to_network(network: Network):
     pass
