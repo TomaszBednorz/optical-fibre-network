@@ -1,5 +1,6 @@
 import builtins
 from enum import Enum
+from numpy import sin,arcsin,sqrt,deg2rad  
 
 class NodeType(Enum):
     BUILDING = 0
@@ -52,8 +53,13 @@ class Edge:
         self.SEWERAGE_COST_1M = 30                  # Employee cost - for FiberType.SEWERAGE
         
 
-    def calculate_distance(self) -> float:
-        return 0  # TODO: Distance by self.start and self.end
+    def calculate_distance(self) -> float:          # Distance by self.start and self.end
+        lat_1, lon_1 = self.start.vert_coord, self.start.hori_coord 
+        lat_2, lon_2 = self.end.vert_coord, self.end.hori_coord
+        r = 6371000                                 # Earth radius
+        distance = 2*r*arcsin(sqrt((sin(deg2rad((lat_2 - lat_1)/2)))**2 +(1-(sin(deg2rad((lat_2 - lat_1)/2))**2)\
+                    -(sin(deg2rad((lat_2 + lat_1)/2)))**2)*(sin(deg2rad((lon_2 - lon_1)/2)))**2))
+        return distance                             # Return distance in [m]
         
     def calculate_price(self) -> float:  # Tu będzie cena za kopanie rowu/wieszanie powietrzem
         return 0  # TODO: Price of edge
