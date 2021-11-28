@@ -1,5 +1,6 @@
 import builtins
 from enum import Enum
+from typing import List
 from numpy import sin,arcsin,sqrt,deg2rad  
 
 class NodeType(Enum):
@@ -11,6 +12,13 @@ class FiberType(Enum):
     UNIVERSAL = 0
     OVERHEAD = 1
     SEWERAGE = 2
+
+# Cost by 1m of different type of assembly
+assembly_cost_1m = {
+    FiberType.UNIVERSAL : 10,
+    FiberType.OVERHEAD : 10,
+    FiberType.SEWERAGE : 30
+}
 
 
 # Node can be a building or pole
@@ -35,25 +43,20 @@ class Device:
         self.price = cost                   # Price in [zl] e.g. 325.44 
         self.amount = buildings_amount      # Number of buildings that can be connected to the device, e.g. 16
         self.id = identifier                # Number, e.g. 2
-        self.idx = None                     # Number, devices can't have the same idx in one network
+        self.idx = None                     # Number, devices can't have the same idx in one network, e.g. 3
 
 class Edge:  
-    def __init__(self, node_start: Node, node_end: Node, edge_type: FiberType, optical_fibre_type: OpticalFibre, identifier: int) -> None:  # other_nodes: Node
+    def __init__(self, node_start: Node, node_end: Node, optical_fibre_type: OpticalFibre) -> None:  # other_nodes: Node
         self.start = node_start                     # The begining of the edge, class Node (always type = NodeType.BUILDING)
         self.end = node_end                         # The end of the edge, class Node (always type = NodeType.BUILDING)
         #self.other = other_nodes                   # Other nodes in this edge, e.g. NodeType.POLE
-        self.type = edge_type                       # Type of the edge, e.g. FiberType.SEWERAGE
         self.optical_fibre = optical_fibre_type     # Type of optical fibre, class OpticalFibre
-        self.id = identifier                        # Number, every edge have different id, e.g. 4
+        self.type = self.optical_fibre.type         # Type of the edge, e.g. FiberType.SEWERAGE
+        self.idx = None                             # Number, edges can't have the same idx in one network, e.g. 4
         self.distance = self.calculate_distance()   # Distance in [m], e.g. 42.42
         self.price = self.calculate_price()         # Price in [zl], e.g. 684.78
 
-        self.UNIVERSAL_COST_1M = 10                  # Employee cost - for FiberType.UNIVERSAL
-        self.UVERHEAD_COST_1M = 10                  # Employee cost - for FiberType.UVERHEAD
-        self.SEWERAGE_COST_1M = 30                  # Employee cost - for FiberType.SEWERAGE
-        
-
-    def calculate_distance(self) -> float:          # Distance by self.start and self.end
+    def calculate_distance(self) -> float:
         lat_1, lon_1 = self.start.vert_coord, self.start.hori_coord 
         lat_2, lon_2 = self.end.vert_coord, self.end.hori_coord
         r = 6371000                                 # Earth radius
@@ -61,11 +64,13 @@ class Edge:
                     -(sin(deg2rad((lat_2 + lat_1)/2)))**2)*(sin(deg2rad((lon_2 - lon_1)/2)))**2))
         return distance                             # Return distance in [m]
         
-    def calculate_price(self) -> float:  # Tu będzie cena za kopanie rowu/wieszanie powietrzem
-        return 0  # TODO: Price of edge
+    def calculate_price(self) -> float:  
+        assembly_cost = self.distance * assembly_cost_1m[self.type]
+        optical_fiber_cost = self.distance * self.optical_fibre.price
+        return assembly_cost + optical_fiber_cost    # Return price in [zl]
 
 
-class Network:
+class OpticalFibreNetwork:
     def __init__(self) -> None:
         self.buildings = []   # Buildings in network
         self.poles = []       # Poles in network
@@ -73,10 +78,13 @@ class Network:
         self.devices = []     # Devices in network 
         self.cost = 0         # Cost of the network
 
-        self.INSTALATION_COST = 50  # [zl]
+        self.INSTALATION_COST = 250  # [zl]
 
     def add_building(self, vert_coord: float, hori_coord: float, id: int):
         self.buildings.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
+
+    def add_buildings_from_txt(Self, filename: str):
+        pass
 
     def remove_building(self, id: int):
         for idx, building in enumerate(self.buildings):
@@ -86,6 +94,9 @@ class Network:
     
     def add_pole(self, vert_coord: float, hori_coord: float, id: int):
         self.poles.append(Node(vert_coord, hori_coord, id, NodeType.POLE))
+
+    def add_poles_from_txt(Self, filename: str):
+        pass
 
     def remove_pole(self, id: int):
         for idx, pole in enumerate(self.poles):
@@ -102,21 +113,43 @@ class Network:
                 break
         device.idx = idx
         self.devices.append(device)
-            
-    def remove_device(self, id):
+
+    def remove_device(self, idx: int):
         for idx, device in enumerate(self.devices):
-            if device.id == id:
+            if device.idx == id:
                 del self.devices[idx]
                 break       
 
-    def add_edge(self):
-        pass
+    def add_edge(self, node_start: Node, node_end: Node, optical_fibre_type: OpticalFibre):
+        new_edge = Edge(node_start, node_end, optical_fibre_type)
+        idx = 1
+        for edge in self.edges:
+            if edge.idx == idx:
+                idx += 1
+            else:
+                break
+        new_edge.idx = idx
+        self.edges.append(new_edge)
 
-    def remove_edge(self):
-        pass
+    def remove_edge(self, idx: int):
+        for idx, edge in enumerate(self.edges):
+            if edge.idx == idx:
+                del self.edges[idx]
+                break  
 
-    def calculate_objective_function(self):  # Edges, devices, instalation cost, etc.
-        return 0 
+    def calculate_objective_function(self):
+        self.cost = 0  # Reset cost of objective function
+
+        self.cost += len(self.buildings) * self.INSTALATION_COST # Instalation cost fot every building
+
+        for device in self.devices:  # Cost of devices
+            self.cost += device.price
+            
+        for edge in self.edges:  # Cost of edges
+            self.cost += edge.price
+
+    def get_cost(self):
+        return self.cost
 
     def check_network_correctness(self):  # Devices, fibres (2 for 1 building), etc.
         return False

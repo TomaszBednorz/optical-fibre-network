@@ -48,11 +48,11 @@ building_22 = Node(50.16712102422911, 19.623630678006876, 212, NodeType.BUILDING
 building_23 = Node(50.16715445802267, 19.62311586810893, 35, NodeType.BUILDING)
 building_24 = Node(50.166814059717545, 19.622522772262208, 339, NodeType.BUILDING)
 building_25 = Node(50.166483330386235, 19.621646232634316, 12, NodeType.BUILDING)
-list_b = [building_1,building_2,building_3,building_4,building_5,
-            building_6,building_7,building_8,building_9,building_10,
-            building_11,building_12,building_13,building_14,building_15,
-            building_16,building_17,building_18,building_19,building_20,
-            building_21,building_22,building_23,building_24,building_25]
+list_of_buildings = [building_1,building_2,building_3,building_4,building_5,
+                     building_6,building_7,building_8,building_9,building_10,
+                     building_11,building_12,building_13,building_14,building_15,
+                     building_16,building_17,building_18,building_19,building_20,
+                     building_21,building_22,building_23,building_24,building_25]
 
 pole_1 = Node(50.16523082647023, 19.625340629501924,9001,NodeType.POLE)
 pole_2 = Node(50.16539971054326, 19.625022100248128,9002,NodeType.POLE)
@@ -68,20 +68,9 @@ pole_11 = Node(50.16547507510575, 19.624193874790684,9011,NodeType.POLE)
 pole_12 = Node(50.165281055413196, 19.62389039997394,9012,NodeType.POLE)
 pole_13 = Node(50.165107809337634, 19.62349144006858,9013,NodeType.POLE)
 pole_14 = Node(50.164818965739734, 19.623433411706582,9014,NodeType.POLE)
-list_p = [pole_1,pole_2,pole_3,pole_4,pole_5,pole_6,pole_7,pole_8,pole_9,pole_10,pole_11,pole_12,pole_13,pole_14]
+list_of_poles = [pole_1,pole_2,pole_3,pole_4,pole_5,pole_6,pole_7,pole_8,pole_9,pole_10,pole_11,pole_12,pole_13,pole_14]
 
 # Just for test calculate_distance
-# e_1 = Edge(pole_1,pole_14,FiberType.SEWERAGE,of_universal_1,1)
+# e_1 = Edge(pole_1,pole_14,of_universal_1)
 # print(e_1.distance)
 
-def add_poles_to_network(network: Network):
-    pass
-
-def add_buildings_to_network(network: Network):
-    pass
-
-def add_devices_to_network(network: Network):
-    pass
-
-def add_edges_to_network(network: Network):
-    pass
