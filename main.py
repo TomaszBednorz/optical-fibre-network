@@ -1,25 +1,40 @@
 from data_structures import *
 from network import *
 from plotting_data import visualization
-from network import list_b, list_p
 
 
 if __name__ == "__main__":
-    optical_fibre_network = Network()
-    visualization(list_b,list_p)
+    network = OpticalFibreNetwork()
+
+    # visualization(list_of_buildings,list_of_poles)
     
     # In future
     # visualization(Network.buildings, Network.poles)
 
-    add_poles_to_network(optical_fibre_network)
-    add_buildings_to_network(optical_fibre_network)
-    add_devices_to_network(optical_fibre_network)
-    add_edges_to_network(optical_fibre_network)
+    for building in list_of_buildings:
+        network.add_building(building.vert_coord, building.hori_coord, building.id)
+
+    for pole in list_of_poles:
+        network.add_pole(pole.vert_coord, pole.hori_coord, pole.id)
 
 
-    #show_cost
+    network.add_device(dev_10)
+    network.add_device(dev_25)
+
+    network.add_edge(network.buildings[0], network.buildings[1], of_overhead_3)
+    network.add_edge(network.buildings[1], network.buildings[2], of_overhead_3)
+    network.add_edge(network.buildings[2], network.buildings[3], of_overhead_3)
+    network.add_edge(network.buildings[3], network.buildings[4], of_overhead_3)
+    network.add_edge(network.buildings[4], network.buildings[5], of_overhead_3)
+    network.add_edge(network.buildings[5], network.buildings[6], of_overhead_2)
+    network.add_edge(network.buildings[6], network.buildings[7], of_overhead_2)
+    network.add_edge(network.buildings[7], network.buildings[8], of_overhead_2)
+    network.add_edge(network.buildings[8], network.buildings[9], of_overhead_2)
+    network.add_edge(network.buildings[9], network.buildings[10], of_overhead_2)
 
 
-    # 1. Dodać słupy, budynki (niekoniecznie wszystkie)
-    # 2. Stworzyć losowe krawędzie (fajnie jakby potem można było to wyświetlić)
-    # 3. Wypluć koszt obecnego połączenia
+
+    network.calculate_objective_function()
+
+    cost = network.get_cost()
+    print("Objective function cost: {:.8} zł".format(cost))
