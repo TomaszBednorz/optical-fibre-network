@@ -47,15 +47,18 @@ class Device:
         self.idx = None                     # Number, devices can't have the same idx in one network, e.g. 3
 
 class Edge:  
-    def __init__(self, node_start: Node, node_end: Node, optical_fibre_type: OpticalFibre) -> None:  # other_nodes: Node
-        self.start = node_start                     # The begining of the edge, class Node (always type = NodeType.BUILDING)
-        self.end = node_end                         # The end of the edge, class Node (always type = NodeType.BUILDING)
-        #self.other = other_nodes                   # Other nodes in this edge, e.g. NodeType.POLE
-        self.optical_fibre = optical_fibre_type     # Type of optical fibre, class OpticalFibre
-        self.type = self.optical_fibre.type         # Type of the edge, e.g. FiberType.SEWERAGE
-        self.idx = None                             # Number, edges can't have the same idx in one network, e.g. 4
-        self.distance = self.calculate_distance()   # Distance in [m], e.g. 42.42
-        self.price = self.calculate_price()         # Price in [zl], e.g. 684.78
+    def __init__(self, node_start: Node, node_end: Node, optical_fibre_type: OpticalFibre or list) -> None:  # other_nodes: Node
+        self.start = node_start                         # The begining of the edge, class Node (always type = NodeType.BUILDING)
+        self.end = node_end                             # The end of the edge, class Node (always type = NodeType.BUILDING)
+        #self.other = other_nodes                       # Other nodes in this edge, e.g. NodeType.POLE
+        if type(optical_fibre_type) == OpticalFibre:
+            self.optical_fibres = [optical_fibre_type]
+        elif type(optical_fibre_type) == list:
+            self.optical_fibres = optical_fibre_type     # List of optical fibre, [class OpticalFibre, ...]
+        self.type = self.optical_fibres[0].type          # Type of the edge, e.g. FiberType.SEWERAGE
+        self.idx = None                                  # Number, edges can't have the same idx in one network, e.g. 4
+        self.distance = self.calculate_distance()        # Distance in [m], e.g. 42.42
+        self.price = self.calculate_price()              # Price in [zl], e.g. 684.78
 
     def calculate_distance(self) -> float:
         lat_1, lon_1 = self.start.vert_coord, self.start.hori_coord 
@@ -67,9 +70,20 @@ class Edge:
         
     def calculate_price(self) -> float:  
         assembly_cost = self.distance * assembly_cost_1m[self.type]
-        optical_fiber_cost = self.distance * self.optical_fibre.price
+        optical_fiber_cost = 0
+        for opt_fib in self.optical_fibres:
+            optical_fiber_cost += self.distance * opt_fib.price
         return assembly_cost + optical_fiber_cost    # Return price in [zl]
 
+    def add_optical_fibre(self, optical_fibre_type: OpticalFibre):
+        self.optical_fibres.append(optical_fibre_type)
+    
+    def remove_optical_fibre(self, identifier: int):
+        for idx, optical_fibre in enumerate(self.optical_fibres):
+            if optical_fibre.id == identifier:
+                del self.optical_fibres[idx]
+                break
+            
 
 class OpticalFibreNetwork:
     def __init__(self) -> None:
@@ -80,6 +94,7 @@ class OpticalFibreNetwork:
         self.cost = 0         # Cost of the network
 
         self.INSTALATION_COST = 250  # [zl]
+        self.START_POINT = (0, 0)
 
     def add_building(self, vert_coord: float, hori_coord: float, id: int):
         self.buildings.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
