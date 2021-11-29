@@ -2,6 +2,7 @@ import builtins
 from enum import Enum
 from typing import List
 from numpy import sin,arcsin,sqrt,deg2rad  
+import gmplot
 
 class NodeType(Enum):
     BUILDING = 0
@@ -83,8 +84,18 @@ class OpticalFibreNetwork:
     def add_building(self, vert_coord: float, hori_coord: float, id: int):
         self.buildings.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
 
-    def add_buildings_from_txt(Self, filename: str):
-        pass
+    def add_buildings_from_txt(self, filename: str):
+        with open(filename, 'r') as f:
+            for line in f.readlines():
+                line.strip()
+                v_c, h_c, id = line.split(" ", 2)
+                self.add_building(float(v_c), float(h_c), int(id))
+    
+    def save_buildings_to_txt(self, filename = None):
+        with open(filename, "w") as f:
+            for building in self.buildings:
+                f.write(str(building.vert_coord)+' '+str(building.hori_coord)+' '+str(building.id))
+                f.write('\n')
 
     def remove_building(self, id: int):
         for idx, building in enumerate(self.buildings):
@@ -95,8 +106,18 @@ class OpticalFibreNetwork:
     def add_pole(self, vert_coord: float, hori_coord: float, id: int):
         self.poles.append(Node(vert_coord, hori_coord, id, NodeType.POLE))
 
-    def add_poles_from_txt(Self, filename: str):
-        pass
+    def add_poles_from_txt(self, filename: str):
+        with open(filename, 'r') as f:
+            for line in f.readlines():
+                line.strip()
+                v_c, h_c, id = line.split(" ", 2)
+                self.add_pole(float(v_c), float(h_c), int(id))
+
+    def save_poles_to_txt(self, filename: str):
+        with open(filename, "w") as f:
+            for pole in self.poles:
+                f.write(str(pole.vert_coord)+' '+str(pole.hori_coord)+' '+str(pole.id))
+                f.write('\n')
 
     def remove_pole(self, id: int):
         for idx, pole in enumerate(self.poles):
@@ -153,3 +174,40 @@ class OpticalFibreNetwork:
 
     def check_network_correctness(self):  # Devices, fibres (2 for 1 building), etc.
         return False
+
+    def visualization(self):
+        # Create the map plotter:
+        apikey = 'AIzaSyBal6A70lGi745Rm8Fdk0o5FZEleeHhBLI' # (your API key here)
+        gmap = gmplot.GoogleMapPlotter(50.165997404672005, 19.625832486967628, 17, apikey=apikey)
+
+        # Highlight buildings:
+        if len(self.buildings) != 0:
+            buildings_ = [0 for i in range(len(self.buildings))]
+            for i in range(len(self.buildings)):
+                buildings_[i] = (self.buildings[i].vert_coord, self.buildings[i].hori_coord)
+            building_y, building_x = zip(*buildings_)
+            gmap.scatter(building_y, building_x, color='orangered', size=4, marker=False,alpha = 1)
+
+        # Highlight poles:
+        if len(self.poles) != 0:
+            poles_ = [0 for i in range(len(self.poles))]
+            for i in range(len(self.poles)):
+                poles_[i] = (self.poles[i].vert_coord,self.poles[i].hori_coord)
+            poles_y, poles_x = zip(*poles_)
+            gmap.scatter(poles_y, poles_x, color='k', size=2, marker=False, symbol = 'x')
+
+        # Create connection between two nodes
+        if len(self.edges) != 0:
+            for i in range(len(self.edges)):
+                if self.edges[i].type == FiberType.OVERHEAD:
+                    color = 'royalblue'
+                elif self.edges[i].type == FiberType.UNIVERSAL:
+                    color = 'gold'   
+                elif self.edges[i].type == FiberType.SEWERAGE:
+                    color = 'green'
+                edge_ = zip(*[(self.edges[i].start.vert_coord, self.edges[i].start.hori_coord),
+                        (self.edges[i].end.vert_coord, self.edges[i].end.hori_coord)])
+                gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
+
+        # Draw the map to an HTML file:
+        gmap.draw('map.html')
