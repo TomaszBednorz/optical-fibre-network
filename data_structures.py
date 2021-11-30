@@ -190,7 +190,7 @@ class OpticalFibreNetwork:
     def check_network_correctness(self) -> bool:  # Devices, fibres (2 for 1 building), etc.
         return False
 
-    def visualization(self) -> None:
+    def visualization(self, show_id = False) -> None::
         # Create the map plotter:
         apikey = 'AIzaSyBal6A70lGi745Rm8Fdk0o5FZEleeHhBLI' # (your API key here)
         gmap = gmplot.GoogleMapPlotter(50.165997404672005, 19.625832486967628, 17, apikey=apikey)
@@ -200,14 +200,17 @@ class OpticalFibreNetwork:
             buildings_ = [0 for i in range(len(self.buildings))]
             for i in range(len(self.buildings)):
                 buildings_[i] = (self.buildings[i].vert_coord, self.buildings[i].hori_coord)
+                if show_id == True:
+                    gmap.text(self.buildings[i].vert_coord, self.buildings[i].hori_coord, str(self.buildings[i].id))
             building_y, building_x = zip(*buildings_)
             gmap.scatter(building_y, building_x, color='orangered', size=4, marker=False,alpha = 1)
-
         # Highlight poles:
         if len(self.poles) != 0:
             poles_ = [0 for i in range(len(self.poles))]
             for i in range(len(self.poles)):
                 poles_[i] = (self.poles[i].vert_coord,self.poles[i].hori_coord)
+                if show_id == True:
+                    gmap.text(self.poles[i].vert_coord, self.poles[i].hori_coord, str(self.poles[i].id))
             poles_y, poles_x = zip(*poles_)
             gmap.scatter(poles_y, poles_x, color='k', size=2, marker=False, symbol = 'x')
 
