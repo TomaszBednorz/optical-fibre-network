@@ -96,51 +96,51 @@ class OpticalFibreNetwork:
         self.INSTALATION_COST = 250  # [zl]
         self.START_POINT = (0, 0)
 
-    def add_building(self, vert_coord: float, hori_coord: float, id: int):
+    def add_building(self, vert_coord: float, hori_coord: float, id: int) -> None:
         self.buildings.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
 
-    def add_buildings_from_txt(self, filename: str):
+    def add_buildings_from_txt(self, filename: str) -> None:
         with open(filename, 'r') as f:
             for line in f.readlines():
                 line.strip()
                 v_c, h_c, id = line.split(" ", 2)
                 self.add_building(float(v_c), float(h_c), int(id))
     
-    def save_buildings_to_txt(self, filename = None):
+    def save_buildings_to_txt(self, filename = None) -> None:
         with open(filename, "w") as f:
             for building in self.buildings:
                 f.write(str(building.vert_coord)+' '+str(building.hori_coord)+' '+str(building.id))
                 f.write('\n')
 
-    def remove_building(self, id: int):
+    def remove_building(self, id: int) -> None:
         for idx, building in enumerate(self.buildings):
             if building.id == id:
                 del self.buildings[idx]
                 break
     
-    def add_pole(self, vert_coord: float, hori_coord: float, id: int):
+    def add_pole(self, vert_coord: float, hori_coord: float, id: int) -> None:
         self.poles.append(Node(vert_coord, hori_coord, id, NodeType.POLE))
 
-    def add_poles_from_txt(self, filename: str):
+    def add_poles_from_txt(self, filename: str) -> None:
         with open(filename, 'r') as f:
             for line in f.readlines():
                 line.strip()
                 v_c, h_c, id = line.split(" ", 2)
                 self.add_pole(float(v_c), float(h_c), int(id))
 
-    def save_poles_to_txt(self, filename: str):
+    def save_poles_to_txt(self, filename: str) -> None:
         with open(filename, "w") as f:
             for pole in self.poles:
                 f.write(str(pole.vert_coord)+' '+str(pole.hori_coord)+' '+str(pole.id))
                 f.write('\n')
 
-    def remove_pole(self, id: int):
+    def remove_pole(self, id: int) -> None:
         for idx, pole in enumerate(self.poles):
             if pole.id == id:
                 del self.poles[idx]
                 break
     
-    def add_device(self, device: Device):
+    def add_device(self, device: Device) -> None:
         idx = 1
         for dev in self.devices:
             if dev.idx == idx:
@@ -150,13 +150,13 @@ class OpticalFibreNetwork:
         device.idx = idx
         self.devices.append(device)
 
-    def remove_device(self, idx: int):
+    def remove_device(self, idx: int) -> None:
         for idx, device in enumerate(self.devices):
             if device.idx == id:
                 del self.devices[idx]
                 break       
 
-    def add_edge(self, node_start: Node, node_end: Node, optical_fibre_type: OpticalFibre):
+    def add_edge(self, node_start: Node, node_end: Node, optical_fibre_type: OpticalFibre) -> None:
         new_edge = Edge(node_start, node_end, optical_fibre_type)
         idx = 1
         for edge in self.edges:
@@ -167,13 +167,13 @@ class OpticalFibreNetwork:
         new_edge.idx = idx
         self.edges.append(new_edge)
 
-    def remove_edge(self, idx: int):
+    def remove_edge(self, idx: int) -> None:
         for idx, edge in enumerate(self.edges):
             if edge.idx == idx:
                 del self.edges[idx]
                 break  
 
-    def calculate_objective_function(self):
+    def calculate_objective_function(self) -> None:
         self.cost = 0  # Reset cost of objective function
 
         self.cost += len(self.buildings) * self.INSTALATION_COST # Instalation cost fot every building
@@ -184,13 +184,13 @@ class OpticalFibreNetwork:
         for edge in self.edges:  # Cost of edges
             self.cost += edge.price
 
-    def get_cost(self):
+    def get_cost(self) -> int:
         return self.cost
 
-    def check_network_correctness(self):  # Devices, fibres (2 for 1 building), etc.
+    def check_network_correctness(self) -> bool:  # Devices, fibres (2 for 1 building), etc.
         return False
 
-    def visualization(self):
+    def visualization(self) -> None:
         # Create the map plotter:
         apikey = 'AIzaSyBal6A70lGi745Rm8Fdk0o5FZEleeHhBLI' # (your API key here)
         gmap = gmplot.GoogleMapPlotter(50.165997404672005, 19.625832486967628, 17, apikey=apikey)
