@@ -33,7 +33,7 @@ if __name__ == "__main__":
     network.calculate_objective_function()
 
     cost = network.get_cost()
-    network.visualization()                     # Add as an argument True to display the id's on map
+    network.visualization(True)                     # Add as an argument True to display the id's on map
     print("Objective function cost: {:.8} zł".format(cost))
 
     network.save_buildings_to_txt('buildings.txt')
