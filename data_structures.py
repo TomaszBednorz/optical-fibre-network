@@ -16,19 +16,11 @@ class FiberType(Enum):
 
 # Cost by 1m of different type of assembly
 assembly_cost_1m = {
+    None : 0,
     FiberType.UNIVERSAL : 10,
     FiberType.OVERHEAD : 10,
     FiberType.SEWERAGE : 30
 }
-
-
-# Node can be a building or pole
-class Node:
-    def __init__(self, vertical_coordinate: float, horizontal_coordinate: float, identifier: int, node_type: NodeType) -> None:
-        self.vert_coord = vertical_coordinate       # E.g. 50.1652214 [N]
-        self.hori_coord = horizontal_coordinate     # E.g. 19.6248754 [E]
-        self.id = identifier                        # Number, buildings and poles can't have the same id, e.g. 370
-        self.type = node_type                       # Type of node, enum NodeType (building or pole), e.g. NodeType.
 
 
 class OpticalFibre:
@@ -46,19 +38,38 @@ class Device:
         self.id = identifier                # Number, e.g. 2
         self.idx = None                     # Number, devices can't have the same idx in one network, e.g. 3
 
+
+# Node can be a building or pole
+class Node:
+    def __init__(self, vertical_coordinate: float, horizontal_coordinate: float, identifier: int, node_type: NodeType) -> None:
+        self.vert_coord = vertical_coordinate       # E.g. 50.1652214 [N]
+        self.hori_coord = horizontal_coordinate     # E.g. 19.6248754 [E]
+        self.id = identifier                        # Number, buildings and poles can't have the same id, e.g. 370
+        self.type = node_type                       # Type of node, enum NodeType (building or pole), e.g. NodeType.
+        self.devices = []                           # Devices, [class Device, ...]
+
+    def add_device(self, device: Device) -> None:
+        self.devices.append(device)
+        
+    def remove_device(self, identifier):
+        for idx, device in enumerate(self.devices):
+            if device.id == identifier:
+                del self.devices[idx]
+                break
+
+
 class Edge:  
-    def __init__(self, node_start: Node, node_end: Node, optical_fibre_type: OpticalFibre or list) -> None:  # other_nodes: Node
+    def __init__(self, node_start: Node, node_end: Node) -> None:  # other_nodes: Node
         self.start = node_start                         # The begining of the edge, class Node (always type = NodeType.BUILDING)
         self.end = node_end                             # The end of the edge, class Node (always type = NodeType.BUILDING)
         #self.other = other_nodes                       # Other nodes in this edge, e.g. NodeType.POLE
-        if type(optical_fibre_type) == OpticalFibre:
-            self.optical_fibres = [optical_fibre_type]
-        elif type(optical_fibre_type) == list:
-            self.optical_fibres = optical_fibre_type     # List of optical fibre, [class OpticalFibre, ...]
-        self.type = self.optical_fibres[0].type          # Type of the edge, e.g. FiberType.SEWERAGE
-        self.idx = None                                  # Number, edges can't have the same idx in one network, e.g. 4
-        self.distance = self.calculate_distance()        # Distance in [m], e.g. 42.42
-        self.price = self.calculate_price()              # Price in [zl], e.g. 684.78
+        self.optical_fibres = []                        # List of optical fibre, [class OpticalFibre, ...]
+        self.type = None                                # Type of the edge, e.g. FiberType.SEWERAGE
+        self.idx = None                                 # Number, edges can't have the same idx in one network, e.g. 4
+        self.max_capacity = 0                           # Number, maximal capacity
+        self.actual_capacity = 0                        # Number, actual capacity
+        self.distance = self.calculate_distance()       # Distance in [m], e.g. 42.42
+        self.price = self.calculate_price()             # Price in [zl], e.g. 684.78
 
     def calculate_distance(self) -> float:
         lat_1, lon_1 = self.start.vert_coord, self.start.hori_coord 
@@ -75,15 +86,35 @@ class Edge:
             optical_fiber_cost += self.distance * opt_fib.price
         return assembly_cost + optical_fiber_cost    # Return price in [zl]
 
+    def calculate_actual_capacity(self) -> int:
+        max_capacity = 0 
+        for optical_fibre in self.optical_fibres:
+            max_capacity += optical_fibre.fib_amount
+        return max_capacity
+
     def add_optical_fibre(self, optical_fibre_type: OpticalFibre):
         self.optical_fibres.append(optical_fibre_type)
-    
+
+        if self.type == None:                        # Add type of edge
+            self.type = optical_fibre_type.type
+
+        if self.type != optical_fibre_type.type:     # Check optical fibre type
+            print("Error: Two different types of optical fibre in one edge !!!")
+
+        self.price = self.calculate_price()                 # Update edge price
+        self.max_capacity = self.calculate_actual_capacity  # Update max edge capacity
+
     def remove_optical_fibre(self, identifier: int):
         for idx, optical_fibre in enumerate(self.optical_fibres):
             if optical_fibre.id == identifier:
                 del self.optical_fibres[idx]
                 break
-            
+        
+        if len(self.optical_fibres) == 0:           # Update type if edge haven't the optical fibre inside
+            self.type = None
+
+        self.price = self.calculate_price()                 # Update edge price
+        self.max_capacity = self.calculate_actual_capacity  # Update max edge capacity
 
 class OpticalFibreNetwork:
     def __init__(self) -> None:
@@ -156,8 +187,8 @@ class OpticalFibreNetwork:
                 del self.devices[idx]
                 break       
 
-    def add_edge(self, node_start: Node, node_end: Node, optical_fibre_type: OpticalFibre) -> None:
-        new_edge = Edge(node_start, node_end, optical_fibre_type)
+    def add_edge(self, node_start: Node, node_end: Node) -> None:
+        new_edge = Edge(node_start, node_end)
         idx = 1
         for edge in self.edges:
             if edge.idx == idx:
@@ -190,7 +221,7 @@ class OpticalFibreNetwork:
     def check_network_correctness(self) -> bool:  # Devices, fibres (2 for 1 building), etc.
         return False
 
-    def visualization(self, show_id = False) -> None::
+    def visualization(self, show_id = False) -> None:
         # Create the map plotter:
         apikey = 'AIzaSyBal6A70lGi745Rm8Fdk0o5FZEleeHhBLI' # (your API key here)
         gmap = gmplot.GoogleMapPlotter(50.165997404672005, 19.625832486967628, 17, apikey=apikey)
@@ -223,6 +254,8 @@ class OpticalFibreNetwork:
                     color = 'gold'   
                 elif self.edges[i].type == FiberType.SEWERAGE:
                     color = 'green'
+                else:
+                    color = 'gray'
                 edge_ = zip(*[(self.edges[i].start.vert_coord, self.edges[i].start.hori_coord),
                         (self.edges[i].end.vert_coord, self.edges[i].end.hori_coord)])
                 gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
