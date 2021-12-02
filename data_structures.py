@@ -1,7 +1,7 @@
 import builtins
 from enum import Enum
 from typing import List
-from numpy import sin,arcsin,sqrt,deg2rad  
+from numpy import inf, sin,arcsin,sqrt,deg2rad  
 import gmplot
 
 class NodeType(Enum):
@@ -56,6 +56,14 @@ class Node:
             if device.id == identifier:
                 del self.devices[idx]
                 break
+
+    def measure_distance(self, node) -> float:
+        lat_1, lon_1 = self.vert_coord, self.hori_coord 
+        lat_2, lon_2 = node.vert_coord, node.hori_coord
+        r = 6371000                                 # Earth radius
+        distance = 2*r*arcsin(sqrt((sin(deg2rad((lat_2 - lat_1)/2)))**2 +(1-(sin(deg2rad((lat_2 - lat_1)/2))**2)\
+                    -(sin(deg2rad((lat_2 + lat_1)/2)))**2)*(sin(deg2rad((lon_2 - lon_1)/2)))**2))
+        return distance                             # Return distance in [m]
 
 
 class Edge:  
@@ -120,6 +128,7 @@ class OpticalFibreNetwork:
     def __init__(self) -> None:
         self.buildings = []   # Buildings in network
         self.poles = []       # Poles in network
+        self.all_nodes = []   # Poles and buildings in network
         self.edges = []       # Edges in graph, adjacency list
         self.devices = []     # Devices in network 
         self.cost = 0         # Cost of the network
@@ -129,6 +138,7 @@ class OpticalFibreNetwork:
 
     def add_building(self, vert_coord: float, hori_coord: float, id: int) -> None:
         self.buildings.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
+        self.all_nodes.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
 
     def add_buildings_from_txt(self, filename: str) -> None:
         with open(filename, 'r') as f:
@@ -151,6 +161,7 @@ class OpticalFibreNetwork:
     
     def add_pole(self, vert_coord: float, hori_coord: float, id: int) -> None:
         self.poles.append(Node(vert_coord, hori_coord, id, NodeType.POLE))
+        self.all_nodes.append(Node(vert_coord, hori_coord, id, NodeType.POLE))
 
     def add_poles_from_txt(self, filename: str) -> None:
         with open(filename, 'r') as f:
@@ -171,7 +182,7 @@ class OpticalFibreNetwork:
                 del self.poles[idx]
                 break
     
-    def add_device(self, device: Device) -> None:
+    def add_device(self, device: Device) -> None:  # TODO: New implementation (adjacency list needed)
         idx = 1
         for dev in self.devices:
             if dev.idx == idx:
@@ -181,7 +192,7 @@ class OpticalFibreNetwork:
         device.idx = idx
         self.devices.append(device)
 
-    def remove_device(self, idx: int) -> None:
+    def remove_device(self, idx: int) -> None:  # TODO: New implementation (adjacency list needed)
         for idx, device in enumerate(self.devices):
             if device.idx == id:
                 del self.devices[idx]
@@ -220,6 +231,78 @@ class OpticalFibreNetwork:
 
     def check_network_correctness(self) -> bool:  # Devices, fibres (2 for 1 building), etc.
         return False
+
+    def generate_edges(self, node_id) -> None:
+        node_ver, node_hor = 0, 0
+        current_node = None
+        for node in self.all_nodes:
+            if node.id == node_id:
+                current_node = node
+                break
+
+        node_ver, node_hor = current_node.vert_coord, current_node.hori_coord
+        first_quarter = []
+        second_quarter = []
+        third_quarter = []
+        fourth_quarter = []
+
+        for node in self.all_nodes:
+            if node.hori_coord == node_hor and node.vert_coord == node_ver:
+                pass
+            elif node.hori_coord >= node_hor and node.vert_coord >= node_ver:  # 1st quarter
+                first_quarter.append(node)
+            elif node.hori_coord < node_hor and node.vert_coord >= node_ver:  # 2nd quarter
+                second_quarter.append(node)
+            elif node.hori_coord < node_hor and node.vert_coord < node_ver:  # 3rd quarter
+                third_quarter.append(node)
+            elif node.hori_coord > node_hor and node.vert_coord < node_ver:  # 4th quarter
+                fourth_quarter.append(node)
+        
+        best_node_1st_q = None
+        best_node_2nd_q = None
+        best_node_3rd_q = None
+        best_node_4th_q = None
+
+        best_dist_1st_q = inf
+        best_dist_2nd_q = inf
+        best_dist_3rd_q = inf
+        best_dist_4th_q = inf
+
+        if len(first_quarter) >= 1:  # Generate edge between node_id and node from 1st quarter
+            for node in first_quarter:
+                dist = current_node.measure_distance(node)
+                if dist <= best_dist_1st_q:
+                    best_dist_1st_q = dist
+                    best_node_1st_q = node
+            self.add_edge(current_node, best_node_1st_q)
+
+        if len(second_quarter) >= 1:  # Generate edge between node_id and node from 2nd quarter
+            for node in second_quarter:
+                dist = current_node.measure_distance(node)
+                if dist <= best_dist_2nd_q:
+                    best_dist_2nd_q = dist
+                    best_node_2nd_q = node
+            self.add_edge(current_node, best_node_2nd_q)
+
+        if len(third_quarter) >= 1:  # Generate edge between node_id and node from 3rd quarter
+            for node in third_quarter:
+                dist = current_node.measure_distance(node)
+                if dist <= best_dist_3rd_q:
+                    best_dist_3rd_q = dist
+                    best_node_3rd_q = node
+            self.add_edge(current_node, best_node_3rd_q)
+
+        if len(fourth_quarter) >= 1:  # Generate edge between node_id and node from 4th quarter
+            for node in fourth_quarter:
+                dist = current_node.measure_distance(node)
+                if dist <= best_dist_4th_q:
+                    best_dist_4th_q = dist
+                    best_node_4th_q = node
+            self.add_edge(current_node, best_node_4th_q)
+
+
+
+
 
     def visualization(self, show_id = False) -> None:
         # Create the map plotter:
