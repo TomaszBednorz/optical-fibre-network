@@ -8,7 +8,6 @@ class NodeType(Enum):
     BUILDING = 0
     POLE = 1
 
-
 class FiberType(Enum):
     UNIVERSAL = 0
     OVERHEAD = 1
@@ -94,7 +93,7 @@ class OpticalFibreNetwork:
         self.cost = 0         # Cost of the network
 
         self.INSTALATION_COST = 250  # [zl]
-        self.START_POINT = (0, 0)
+        self.START_POINT = (50.16429619810853, 19.626773362067187)
 
     def add_building(self, vert_coord: float, hori_coord: float, id: int):
         self.buildings.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
@@ -253,6 +252,15 @@ class OpticalFibreNetwork:
                 edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
                         (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
                 gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
+
+        # Create START_POINT
+        # start_ = [self.START_POINT]
+        # for i in range(len(self.buildings)):
+        #         buildings_[i] = (self.buildings[i].vert_coord, self.buildings[i].hori_coord)
+        #         if show_id == True:
+        #             gmap.text(self.buildings[i].vert_coord, self.buildings[i].hori_coord, str(self.buildings[i].id))
+        #     building_y, building_x = zip(*buildings_)
+        #     gmap.scatter(building_y, building_x, color='orangered', size=4, marker=False,alpha = 1)
 
         # Draw the map to an HTML file:
         gmap.draw('map.html')
