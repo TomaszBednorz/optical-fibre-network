@@ -89,7 +89,7 @@ class OpticalFibreNetwork:
     def __init__(self) -> None:
         self.buildings = []   # Buildings in network
         self.poles = []       # Poles in network
-        self.edges = []       # Edges in graph, adjacency list
+        self.edges = dict()   # Edges in graph, adjacency list (dictionary of list)
         self.devices = []     # Devices in network 
         self.cost = 0         # Cost of the network
 
@@ -159,30 +159,56 @@ class OpticalFibreNetwork:
     def add_edge(self, node_start: Node, node_end: Node, optical_fibre_type: OpticalFibre):
         new_edge = Edge(node_start, node_end, optical_fibre_type)
         idx = 1
-        for edge in self.edges:
-            if edge.idx == idx:
-                idx += 1
-            else:
-                break
+        for node in self.edges:
+            for edge in self.edges[node]:
+                if edge.idx == idx:
+                    idx += 1
+                else:
+                    break
         new_edge.idx = idx
-        self.edges.append(new_edge)
+
+        if node_start in self.edges:
+            if type(self.edges[node_start]) == list:
+                self.edges[node_start].append(new_edge)
+        else:
+            self.edges[node_start] = [new_edge]
+
+        if node_end in self.edges:
+            if type(self.edges[node_end]) == list:
+                self.edges[node_end].append(new_edge)
+        else:
+            self.edges[node_end] = [new_edge]
 
     def remove_edge(self, idx: int):
-        for idx, edge in enumerate(self.edges):
-            if edge.idx == idx:
-                del self.edges[idx]
+        for node in list(self.edges):
+            for edge in self.edges[node]:
+                if edge.idx == idx:
+                    self.edges[node].remove(edge)
                 break  
+            if len(self.edges[node]) == 0:
+                del self.edges[node]
+    
+    def dct_to_list(self):
+        list_ = []
+        for node in self.edges:
+            for edge in self.edges[node]:
+                if edge not in list_:
+                    list_.append(edge)
+        return list_
 
     def calculate_objective_function(self):
         self.cost = 0  # Reset cost of objective function
 
         self.cost += len(self.buildings) * self.INSTALATION_COST # Instalation cost fot every building
-
+        idx_ = []
         for device in self.devices:  # Cost of devices
             self.cost += device.price
             
-        for edge in self.edges:  # Cost of edges
-            self.cost += edge.price
+        for node in self.edges:
+            for edge in self.edges[node]:
+                if edge.idx not in idx_:
+                    self.cost += edge.price
+                    idx_.append(edge.idx)
 
     def get_cost(self):
         return self.cost
@@ -216,15 +242,16 @@ class OpticalFibreNetwork:
 
         # Create connection between two nodes
         if len(self.edges) != 0:
-            for i in range(len(self.edges)):
-                if self.edges[i].type == FiberType.OVERHEAD:
+            edges_ = self.dct_to_list()
+            for i in range(len(edges_)):
+                if edges_[i].type == FiberType.OVERHEAD:
                     color = 'royalblue'
-                elif self.edges[i].type == FiberType.UNIVERSAL:
+                elif edges_[i].type == FiberType.UNIVERSAL:
                     color = 'gold'   
-                elif self.edges[i].type == FiberType.SEWERAGE:
+                elif edges_[i].type == FiberType.SEWERAGE:
                     color = 'green'
-                edge_ = zip(*[(self.edges[i].start.vert_coord, self.edges[i].start.hori_coord),
-                        (self.edges[i].end.vert_coord, self.edges[i].end.hori_coord)])
+                edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
+                        (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
                 gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
 
         # Draw the map to an HTML file:

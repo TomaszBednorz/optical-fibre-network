@@ -28,12 +28,10 @@ if __name__ == "__main__":
     network.add_edge(network.poles[5], network.poles[0], of_overhead_3)
 
 
-
-
     network.calculate_objective_function()
+    network.visualization(True)    # Add as an argument True to display the id's on map
 
-    cost = network.get_cost()
-    network.visualization(True)                     # Add as an argument True to display the id's on map
+    cost = network.get_cost()                
     print("Objective function cost: {:.8} zł".format(cost))
 
     network.save_buildings_to_txt('buildings.txt')
