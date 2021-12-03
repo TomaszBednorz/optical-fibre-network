@@ -1,12 +1,13 @@
 import builtins
 from enum import Enum
 from typing import List
-from numpy import inf, sin,arcsin,sqrt,deg2rad  
+from numpy import inf,sin,arcsin,sqrt,deg2rad  
 import gmplot
 
 class NodeType(Enum):
     BUILDING = 0
     POLE = 1
+    START_POINT = 2
 
 class FiberType(Enum):
     UNIVERSAL = 0
@@ -134,7 +135,11 @@ class OpticalFibreNetwork:
         self.cost = 0         # Cost of the network
 
         self.INSTALATION_COST = 250  # [zl]
-        self.START_POINT = (50.16429619810853, 19.626773362067187)
+        self.START_POINT = None
+
+    def add_starting_point(self, vert_coord: float, hori_coord: float, id = 0) -> None:
+        self.START_POINT = Node(vert_coord, hori_coord, id, NodeType.START_POINT)
+        self.all_nodes.append(Node(vert_coord, hori_coord, id, NodeType.START_POINT))
 
     def add_building(self, vert_coord: float, hori_coord: float, id: int) -> None:
         self.buildings.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
@@ -327,10 +332,6 @@ class OpticalFibreNetwork:
                     best_node_4th_q = node
             self.add_edge(current_node, best_node_4th_q)
 
-
-
-
-
     def visualization(self, show_id = False) -> None:
         # Create the map plotter:
         apikey = 'AIzaSyBal6A70lGi745Rm8Fdk0o5FZEleeHhBLI' # (your API key here)
@@ -372,13 +373,9 @@ class OpticalFibreNetwork:
                 gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
 
         # Create START_POINT
-        # start_ = [self.START_POINT]
-        # for i in range(len(self.buildings)):
-        #         buildings_[i] = (self.buildings[i].vert_coord, self.buildings[i].hori_coord)
-        #         if show_id == True:
-        #             gmap.text(self.buildings[i].vert_coord, self.buildings[i].hori_coord, str(self.buildings[i].id))
-        #     building_y, building_x = zip(*buildings_)
-        #     gmap.scatter(building_y, building_x, color='orangered', size=4, marker=False,alpha = 1)
+        if show_id == True:
+            gmap.text(self.START_POINT.vert_coord, self.START_POINT.hori_coord, str(self.START_POINT.id))
+        gmap.scatter([self.START_POINT.vert_coord], [self.START_POINT.hori_coord], color='darkviolet', size=3, marker=False,alpha = 1,symbol = '+')
 
         # Draw the map to an HTML file:
         gmap.draw('map.html')
