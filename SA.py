@@ -28,7 +28,14 @@ class SimulatedAnnealing:
 
 
     def create_beginning_solution(self) -> None:
-        pass
+        self.actual_solution = self.empty_network
+        for node in self.actual_solution.all_nodes:
+            self.actual_solution.generate_edges(node.id)
+
+
+
+        
+
 
     def device_neighbourhood(self) -> None:
         pass
