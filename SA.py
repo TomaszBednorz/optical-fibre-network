@@ -1,7 +1,9 @@
 from data_structures import *
+import random
+
 
 # Devices: cost, buildings_amount, id
-dev_3 = Device(647.00, 3, 1)
+dev_4 = Device(863.00, 4, 1)
 dev_10 = Device(2002.00, 10, 2)
 dev_25 = Device(4726.00, 25, 3)
 dev_60 = Device(10182.00, 30, 4)
@@ -26,13 +28,59 @@ class SimulatedAnnealing:
         self.actual_solution = None
         self.best_solution = None
 
+        self.MAX_OVERHEAD_DISTANCE = 40  # [m]
+
 
     def create_beginning_solution(self) -> None:
         self.actual_solution = self.empty_network
         for node in self.actual_solution.all_nodes:
             self.actual_solution.generate_edges(node.id)
 
+        visited_edges = []
+        visited_buildings = []
+        current_node = self.actual_solution.START_POINT
+        self.actual_solution.add_device(dev_4, current_node)
+        iterator = 0
+        node_edges = self.actual_solution.edges[current_node]
 
+        while len(visited_buildings) < len(self.actual_solution.buildings):
+            rand_num = random.randint(0, len(node_edges) - 1)
+            current_edge = node_edges[rand_num]
+
+            if current_edge not in visited_edges:
+                visited_edges.append(current_edge)
+            
+                if current_edge.distance >= self.MAX_OVERHEAD_DISTANCE:  # Add optical fibre to node
+                    current_edge.add_optical_fibre(of_sewerage_1)
+                else:
+                    current_edge.add_optical_fibre(of_overhead_1)
+            else:
+                if current_edge in visited_edges:
+                    if current_edge.type == FiberType.OVERHEAD:
+                        current_edge.add_optical_fibre(of_overhead_1)
+                    else:
+                        current_edge.add_optical_fibre(of_sewerage_1)
+
+            if current_node.id == current_edge.start.id:
+                current_node = current_edge.end  # Update current node
+            else:
+                current_node = current_edge.start 
+
+            node_edges = self.actual_solution.edges[current_node]
+
+            if current_node.type == NodeType.BUILDING:
+                if current_node not in visited_buildings:
+                    visited_buildings.append(current_node)
+
+            iterator += 1
+            if iterator >= 100:  # Add device to node and optical fibre to previous edges every 200 iteration
+                self.actual_solution.add_device(dev_4, current_node)
+                iterator = 0
+                for edge in visited_edges:
+                    if edge.type == FiberType.OVERHEAD:
+                        edge.add_optical_fibre(of_overhead_1)
+                    else:
+                        edge.add_optical_fibre(of_sewerage_1)
 
         
 

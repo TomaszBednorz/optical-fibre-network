@@ -111,12 +111,13 @@ class Edge:
             print("Error: Two different types of optical fibre in one edge !!!")
 
         self.price = self.calculate_price()                 # Update edge price
-        self.max_capacity = self.calculate_actual_capacity  # Update max edge capacity
+        self.max_capacity = self.calculate_actual_capacity()  # Update max edge capacity
 
     def remove_optical_fibre(self, identifier: int):
         for idx, optical_fibre in enumerate(self.optical_fibres):
             if optical_fibre.id == identifier:
                 del self.optical_fibres[idx]
+                self.max_capacity = self.calculate_actual_capacity()
                 break
         
         if len(self.optical_fibres) == 0:           # Update type if edge haven't the optical fibre inside

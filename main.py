@@ -1,6 +1,8 @@
 from data_structures import *
 from SA import *
 
+
+
 if __name__ == "__main__":
     network = OpticalFibreNetwork()
     network.add_starting_point(50.16429619810853, 19.626773362067187)
@@ -13,18 +15,20 @@ if __name__ == "__main__":
     sa.actual_solution.calculate_objective_function()
     cost = sa.actual_solution.get_cost()
     sa.actual_solution.visualization(True)                     # Add as an argument True to display the id's on map
+
+
+    for key in sa.actual_solution.edges:
+        for el in sa.actual_solution.edges[key]:
+            dist = el.distance
+            a = el.start.id
+            b = el.end.id
+            ty = el.type
+            num = len(el.optical_fibres)
+            print("{} : {} dist: {} type: {} len: {}".format(a, b, dist, ty, num))
+
     print("Objective function cost: {} zł".format(cost))
-
-
-    # for key in network.edges:
-    #     for el in network.edges[key]:
-    #         dist = el.distance
-    #         a = el.start.id
-    #         b = el.end.id
-    #         print("{} : {} dist: {}".format(a, b, dist))
-
-
-
+    sa.empty_network.calculate_objective_function()
+    print(sa.empty_network.cost)
     # network.calculate_objective_function()
     # cost = network.get_cost()
     # network.visualization(True)                     # Add as an argument True to display the id's on map
