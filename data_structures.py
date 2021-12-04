@@ -216,13 +216,15 @@ class OpticalFibreNetwork:
 
         if node_start in self.edges:
             if type(self.edges[node_start]) == list:
-                self.edges[node_start].append(new_edge)
+                if new_edge not in self.edges[node_start]:
+                    self.edges[node_start].append(new_edge)
         else:
             self.edges[node_start] = [new_edge]
 
         if node_end in self.edges:
             if type(self.edges[node_end]) == list:
-                self.edges[node_end].append(new_edge)
+                if new_edge not in self.edges[node_end]:
+                    self.edges[node_end].append(new_edge)
         else:
             self.edges[node_end] = [new_edge]
 
@@ -371,6 +373,7 @@ class OpticalFibreNetwork:
                 edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
                         (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
                 gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
+                gmap.text((edges_[i].start.vert_coord + edges_[i].end.vert_coord)/2, (edges_[i].start.hori_coord + edges_[i].end.hori_coord)/2, str(edges_[i].idx),color = 'dimgray')
 
         # Create START_POINT
         if show_id == True:
