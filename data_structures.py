@@ -223,8 +223,6 @@ class OpticalFibreNetwork:
                 del self.devices[node]
         self.devices_idxs.remove(idx)
 
-        
-
     def add_edge(self, node_start: Node, node_end: Node) -> None:
         new_edge = Edge(node_start, node_end)
         idx = 1
@@ -236,19 +234,32 @@ class OpticalFibreNetwork:
                     break
         new_edge.idx = idx
 
+
+        edge_exist = 0
         if node_start in self.edges:
-            if type(self.edges[node_start]) == list:
-                if new_edge not in self.edges[node_start]:
-                    self.edges[node_start].append(new_edge)
-        else:
-            self.edges[node_start] = [new_edge]
+            for edges in self.edges[node_start]:
+                if edges.end.id == node_end.id:
+                    edge_exist = 1
+                    break
 
         if node_end in self.edges:
-            if type(self.edges[node_end]) == list:
-                if new_edge not in self.edges[node_end]:
+            for edges in self.edges[node_end]:
+                if edges.end.id == node_start.id:
+                    edge_exist = 1
+                    break
+
+        if not edge_exist:
+            if node_start in self.edges:
+                if type(self.edges[node_start]) == list:
+                    self.edges[node_start].append(new_edge)
+            else:
+                self.edges[node_start] = [new_edge]
+
+            if node_end in self.edges:
+                if type(self.edges[node_end]) == list:
                     self.edges[node_end].append(new_edge)
-        else:
-            self.edges[node_end] = [new_edge]
+            else:
+                self.edges[node_end] = [new_edge]
 
     def remove_edge(self, idx: int) -> None:
         for node in list(self.edges):

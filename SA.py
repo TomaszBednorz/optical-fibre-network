@@ -21,9 +21,10 @@ of_sewerage_3 = OpticalFibre(3.75, 12, FiberType.SEWERAGE, 8)
 of_sewerage_4 = OpticalFibre(6.03, 24, FiberType.SEWERAGE, 9)
 
 class SimulatedAnnealing:
-    def __init__(self) -> None:
-        actual_solution = None
-        best_solution = None
+    def __init__(self, network: OpticalFibreNetwork) -> None:
+        self.empty_network = network
+        self.actual_solution = None
+        self.best_solution = None
 
 
     def create_beginning_solution(self) -> None:

@@ -16,6 +16,8 @@ if __name__ == "__main__":
 
 
     network.generate_edges(9015)
+    network.generate_edges(9016)
+
     for key in network.edges:
         for el in network.edges[key]:
             dist = el.distance
