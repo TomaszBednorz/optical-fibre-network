@@ -129,11 +129,14 @@ class OpticalFibreNetwork:
     def __init__(self) -> None:
         self.buildings = []     # Buildings in network
         self.poles = []         # Poles in network
-        self.edges = dict()     # Edges in graph, adjacency list (dictionary of list)
-        self.all_nodes = []     # Poles and buildings in network
 
+        self.edges = dict()     # Edges in graph, adjacency list (dictionary of list)
+        self.edges_idxs = []    # Indexes of edges
+        
         self.devices = dict()   # Devices in network 
         self.devices_idxs = []  # Indexes of devices
+
+        self.all_nodes = []     # Poles and buildings in network
 
         self.cost = 0         # Cost of the network
         self.INSTALATION_COST = 250  # [zl]
@@ -224,17 +227,6 @@ class OpticalFibreNetwork:
         self.devices_idxs.remove(idx)
 
     def add_edge(self, node_start: Node, node_end: Node) -> None:
-        new_edge = Edge(node_start, node_end)
-        idx = 1
-        for node in self.edges:
-            for edge in self.edges[node]:
-                if edge.idx == idx:
-                    idx += 1
-                else:
-                    break
-        new_edge.idx = idx
-
-
         edge_exist = 0
         if node_start in self.edges:
             for edges in self.edges[node_start]:
@@ -249,6 +241,18 @@ class OpticalFibreNetwork:
                     break
 
         if not edge_exist:
+            new_edge = Edge(node_start, node_end)
+
+            self.edges_idxs.sort()
+            idx = 1
+            for edge_idx in self.edges_idxs:
+                if edge_idx == idx:
+                    idx += 1
+                else:
+                    break
+            new_edge.idx = idx  
+            self.edges_idxs.append(idx)
+
             if node_start in self.edges:
                 if type(self.edges[node_start]) == list:
                     self.edges[node_start].append(new_edge)
@@ -270,6 +274,7 @@ class OpticalFibreNetwork:
                 break  
             if len(self.edges[node]) == 0:
                 del self.edges[node]
+        self.edges_idxs.remove(idx)
     
     def dct_to_list(self):
         list_ = []
