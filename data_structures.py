@@ -3,6 +3,7 @@ from enum import Enum
 from typing import List
 from numpy import inf,sin,arcsin,sqrt,deg2rad  
 import gmplot
+import copy
 
 class NodeType(Enum):
     BUILDING = 0
@@ -126,14 +127,15 @@ class Edge:
 
 class OpticalFibreNetwork:
     def __init__(self) -> None:
-        self.buildings = []   # Buildings in network
-        self.poles = []       # Poles in network
-        self.edges = dict()   # Edges in graph, adjacency list (dictionary of list)
-        self.all_nodes = []   # Poles and buildings in network
+        self.buildings = []     # Buildings in network
+        self.poles = []         # Poles in network
+        self.edges = dict()     # Edges in graph, adjacency list (dictionary of list)
+        self.all_nodes = []     # Poles and buildings in network
 
-        self.devices = dict() # Devices in network 
+        self.devices = dict()   # Devices in network 
+        self.devices_idxs = []  # Indexes of devices
+
         self.cost = 0         # Cost of the network
-
         self.INSTALATION_COST = 250  # [zl]
         self.START_POINT = None
 
@@ -190,22 +192,25 @@ class OpticalFibreNetwork:
                 break
     
     def add_device(self, device: Device, node: Node) -> None:  # TODO: New implementation (adjacency list needed)
+        self.devices_idxs.sort()
+        new_dev = copy.copy(device)
         idx = 1
-        for dev in self.devices:
-            if dev.idx == idx:
+        for dev_idx in self.devices_idxs:
+            if dev_idx == idx:
                 idx += 1
             else:
                 break
-        device.idx = idx
+        new_dev.idx = idx
 
         if node in self.devices:
             if type(self.devices[node]) == list:
-                if device not in self.devices[node]:
-                    self.devices[node].append(device)
+                if new_dev not in self.devices[node]:
+                    self.devices[node].append(new_dev)
         else:
-            self.devices[node] = [device]
+            self.devices[node] = [new_dev]
         
-        node.add_device(device)
+        node.add_device(new_dev)
+        self.devices_idxs.append(idx)
 
     def remove_device(self, idx: int) -> None:  # TODO: New implementation (adjacency list needed)
         for node in list(self.devices):
@@ -216,6 +221,8 @@ class OpticalFibreNetwork:
                 break  
             if len(self.devices[node]) == 0:
                 del self.devices[node]
+        self.devices_idxs.remove(idx)
+
         
 
     def add_edge(self, node_start: Node, node_end: Node) -> None:
@@ -266,8 +273,9 @@ class OpticalFibreNetwork:
 
         self.cost += len(self.buildings) * self.INSTALATION_COST # Instalation cost fot every building
         idx_ = []
-        for device in self.devices:  # Cost of devices
-            self.cost += device.price
+        for node in self.devices:  # Cost of devices
+            for device in self.devices[node]:
+                self.cost += device.price
             
         for node in self.edges:
             for edge in self.edges[node]:
