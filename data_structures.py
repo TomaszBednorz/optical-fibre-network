@@ -286,9 +286,6 @@ class OpticalFibreNetwork:
     def get_cost(self) -> int:
         return self.cost
 
-    def check_network_correctness(self) -> bool:  # Devices, fibres (2 for 1 building), etc.
-        return False
-
     def generate_edges(self, node_id) -> None:
         node_ver, node_hor = 0, 0
         current_node = None
