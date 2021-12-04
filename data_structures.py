@@ -53,7 +53,7 @@ class Node:
         
     def remove_device(self, identifier):
         for idx, device in enumerate(self.devices):
-            if device.id == identifier:
+            if device.idx == identifier:
                 del self.devices[idx]
                 break
 
@@ -131,7 +131,7 @@ class OpticalFibreNetwork:
         self.edges = dict()   # Edges in graph, adjacency list (dictionary of list)
         self.all_nodes = []   # Poles and buildings in network
 
-        self.devices = []     # Devices in network 
+        self.devices = dict() # Devices in network 
         self.cost = 0         # Cost of the network
 
         self.INSTALATION_COST = 250  # [zl]
@@ -139,11 +139,12 @@ class OpticalFibreNetwork:
 
     def add_starting_point(self, vert_coord: float, hori_coord: float, id = 0) -> None:
         self.START_POINT = Node(vert_coord, hori_coord, id, NodeType.START_POINT)
-        self.all_nodes.append(Node(vert_coord, hori_coord, id, NodeType.START_POINT))
+        self.all_nodes.append(self.START_POINT)
 
     def add_building(self, vert_coord: float, hori_coord: float, id: int) -> None:
-        self.buildings.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
-        self.all_nodes.append(Node(vert_coord, hori_coord, id, NodeType.BUILDING))
+        building = Node(vert_coord, hori_coord, id, NodeType.BUILDING)
+        self.buildings.append(building)
+        self.all_nodes.append(building)
 
     def add_buildings_from_txt(self, filename: str) -> None:
         with open(filename, 'r') as f:
@@ -165,8 +166,9 @@ class OpticalFibreNetwork:
                 break
     
     def add_pole(self, vert_coord: float, hori_coord: float, id: int) -> None:
-        self.poles.append(Node(vert_coord, hori_coord, id, NodeType.POLE))
-        self.all_nodes.append(Node(vert_coord, hori_coord, id, NodeType.POLE))
+        pole = Node(vert_coord, hori_coord, id, NodeType.POLE)
+        self.poles.append(pole)
+        self.all_nodes.append(pole)
 
     def add_poles_from_txt(self, filename: str) -> None:
         with open(filename, 'r') as f:
@@ -187,7 +189,7 @@ class OpticalFibreNetwork:
                 del self.poles[idx]
                 break
     
-    def add_device(self, device: Device) -> None:  # TODO: New implementation (adjacency list needed)
+    def add_device(self, device: Device, node: Node) -> None:  # TODO: New implementation (adjacency list needed)
         idx = 1
         for dev in self.devices:
             if dev.idx == idx:
@@ -195,13 +197,26 @@ class OpticalFibreNetwork:
             else:
                 break
         device.idx = idx
-        self.devices.append(device)
+
+        if node in self.devices:
+            if type(self.devices[node]) == list:
+                if device not in self.devices[node]:
+                    self.devices[node].append(device)
+        else:
+            self.devices[node] = [device]
+        
+        node.add_device(device)
 
     def remove_device(self, idx: int) -> None:  # TODO: New implementation (adjacency list needed)
-        for idx, device in enumerate(self.devices):
-            if device.idx == id:
-                del self.devices[idx]
-                break       
+        for node in list(self.devices):
+            for dev in self.devices[node]:
+                if dev.idx == idx:
+                    self.devices[node].remove(dev)
+                    node.remove_device(idx)
+                break  
+            if len(self.devices[node]) == 0:
+                del self.devices[node]
+        
 
     def add_edge(self, node_start: Node, node_end: Node) -> None:
         new_edge = Edge(node_start, node_end)

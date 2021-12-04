@@ -16,18 +16,16 @@ if __name__ == "__main__":
 
 
 
-    network.generate_edges(7)
-    network.generate_edges(9017)
-    network.generate_edges(12)
-    network.generate_edges(9029)
-    network.generate_edges(9006)
-    network.generate_edges(31)
+    network.generate_edges(370)
+
+    network.add_device(dev_10, network.buildings[0])
+    network.remove_device(1)
 
 
-    network.calculate_objective_function()
-    cost = network.get_cost()
+    # network.calculate_objective_function()
+    # cost = network.get_cost()
     network.visualization(True)                     # Add as an argument True to display the id's on map
-    print("Objective function cost: {:.8} zł".format(cost))
+    # print("Objective function cost: {:.8} zł".format(cost))
 
 
     network.save_buildings_to_txt('buildings.txt')
