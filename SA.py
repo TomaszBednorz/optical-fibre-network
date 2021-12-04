@@ -1,6 +1,5 @@
 from data_structures import *
 
-
 # Devices: cost, buildings_amount, id
 dev_3 = Device(647.00, 3, 1)
 dev_10 = Device(2002.00, 10, 2)
@@ -21,3 +20,23 @@ of_sewerage_2 = OpticalFibre(2.89, 8, FiberType.SEWERAGE, 7)
 of_sewerage_3 = OpticalFibre(3.75, 12, FiberType.SEWERAGE, 8)
 of_sewerage_4 = OpticalFibre(6.03, 24, FiberType.SEWERAGE, 9)
 
+class SimulatedAnnealing:
+    def __init__(self) -> None:
+        actual_solution = None
+        best_solution = None
+
+
+    def create_beginning_solution(self) -> None:
+        pass
+
+    def device_neighbourhood(self) -> None:
+        pass
+
+    def edge_neighbourhood(self) -> None:
+        pass
+        
+    def check_network_correctness(self, network: OpticalFibreNetwork) -> bool:
+        pass
+
+    def run_alghoritm(self) -> None:
+        pass

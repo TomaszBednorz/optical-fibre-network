@@ -1,12 +1,11 @@
 from data_structures import *
-from network import *
-
+from SA import *
 
 if __name__ == "__main__":
     network = OpticalFibreNetwork()
     network.add_starting_point(50.16429619810853, 19.626773362067187)
-    network.add_buildings_from_txt('buildings.txt')
-    network.add_poles_from_txt('poles.txt')
+    network.add_buildings_from_txt('buildings_for_tests.txt')
+    network.add_poles_from_txt('poles_for_tests.txt')
 
     # network.add_device(dev_10)
     # network.add_device(dev_25)
@@ -16,15 +15,13 @@ if __name__ == "__main__":
 
 
 
-    network.generate_edges(370)
-
-    network.add_device(dev_10, network.buildings[0])
-    network.add_device(dev_10, network.buildings[0])
-    network.add_device(dev_10, network.buildings[0])
-    network.remove_device(1)
-    network.add_device(dev_25, network.buildings[0])
-
-
+    network.generate_edges(9015)
+    for key in network.edges:
+        for el in network.edges[key]:
+            dist = el.distance
+            a = el.start.id
+            b = el.end.id
+            print("{} : {} dist: {}".format(a, b, dist))
 
 
 
