@@ -1,3 +1,4 @@
+from numpy import number
 from data_structures import *
 import random
 
@@ -82,9 +83,6 @@ class SimulatedAnnealing:
                     else:
                         edge.add_optical_fibre(of_sewerage_1)
 
-        
-
-
     def device_neighbourhood(self) -> None:
         pass
 
@@ -92,7 +90,74 @@ class SimulatedAnnealing:
         pass
         
     def check_network_correctness(self, network: OpticalFibreNetwork) -> bool:
-        pass
+        number_of_buildings = len(network.buildings)                # Chcecking devices
+        number_of_devices = 0
+        number_of_max_buildings = 0
+        for node in network.all_nodes:
+            if len(node.devices) != 0:
+                for device in node.devices:
+                    number_of_devices += 1
+                    number_of_max_buildings += device.amount    
+        if number_of_max_buildings >= number_of_buildings:
+            correct = True
+        else: 
+            correct =  False
+        print("Number of devices: {} , number of buildings that can be connected to the device: {} .".format(number_of_devices,number_of_max_buildings))
+        print("Number of buildings: {} .".format(number_of_buildings))
+
+        if correct == False:
+            return correct
+
+        s = network.START_POINT.id
+        d = dict()            # Checking optical fibers
+        p = dict()
+
+        for node in network.all_nodes:
+            d[node.id] = float('inf')
+            p[node.id] = None
+        
+        d[s] = 0
+
+        for i in range(len(network.all_nodes)-1):
+            for node in network.all_nodes:
+                for edge in network.edges[node]:
+                    if edge.type != None:
+                        if d[edge.end.id] > d[node.id] + edge.distance:    # chyba moze byc tez edge.start
+                            d[edge.end.id] =  d[node.id] + edge.distance
+                            p[edge.end.id] = node.id
+        
+        for node in network.all_nodes:    # Raczej nie będzie cyklu więc będzie można usunąć
+            for edge in network.edges[node]:
+                if edge.type != None:
+                    if d[edge.end.id] <= d[node.id] + edge.distance:   
+                        continue
+                    else:
+                        print("Cykl ujemny!")
+
+        edges_ = {}
+        list_edges = network.dct_to_list()
+        for building in network.buildings:
+            current = building.id
+            while current:
+                for edge_ in list_edges:
+                    if (edge_.start.id == current and edge_.end.id == p[current]) or (edge_.end.id == current and edge_.start.id == p[current]):
+                        if edge_.idx in edges_:
+                            edges_[edge_.idx] += 1
+                        else:
+                            edges_[edge_.idx] = 1
+                current = p[current]
+        print(edges_)
+        for ed in edges_:
+            for ed_ in list_edges:
+                if ed == ed_.idx:
+                    print(edges_[ed],ed_.max_capacity)
+                    max = ed_.max_capacity
+                    break
+            if edges_[ed] <= max:
+                correct = True
+            else:
+                return False
+        return True
 
     def run_alghoritm(self) -> None:
         pass
