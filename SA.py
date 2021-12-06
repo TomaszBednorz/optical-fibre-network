@@ -75,7 +75,7 @@ class SimulatedAnnealing:
 
             iterator += 1
             if iterator >= num_of_iterations:  # Add device to node and optical fibre to previous edges every 50 iteration
-                self.actual_solution.add_device(dev_4, current_node)
+                self.actual_solution.add_device(dev_10, current_node)
                 iterator = 0
                 for edge in visited_edges:
                     if edge.type == FiberType.OVERHEAD:
@@ -83,8 +83,25 @@ class SimulatedAnnealing:
                     else:
                         edge.add_optical_fibre(of_sewerage_1)
 
-    def update_device_neighbourhood(self, ) -> None:
-        pass
+    def update_device_neighbourhood(self) -> None:
+        possible_devices = [dev_4, dev_10, dev_25, dev_60]
+
+        neighbourhood_solution = copy.deepcopy(self.actual_solution)  # Deep copy of actual solution
+
+        rand_num = random.randint(0, len(neighbourhood_solution.all_nodes) - 1)  # Number to choose node for optimization
+        node = neighbourhood_solution.all_nodes[rand_num]
+
+        rand_num_of_devices = random.randint(0, 2)
+
+        for div in node.devices:  # Delete devices from node
+            neighbourhood_solution.remove_device(div.idx)
+
+        for _ in range(rand_num_of_devices):
+            neighbourhood_solution.add_device(possible_devices[random.randint(0, 3)], node)
+
+        neighbourhood_solution.calculate_objective_function()
+
+        return neighbourhood_solution
 
     def update_node_neighbourhood(self, max_num_of_of: int, type_of_node: NodeType) -> OpticalFibreNetwork:
         possible_of_overhead = [of_overhead_1, of_overhead_2, of_overhead_3, of_overhead_4]
@@ -95,7 +112,6 @@ class SimulatedAnnealing:
         rand_num = 0  # Number to choose node for optimization
         node = None
         
-        list_of_optical_fibres = []
         if type_of_node == NodeType.BUILDING:
             rand_num = random.randint(0, len(neighbourhood_solution.buildings) - 1)
             node = neighbourhood_solution.buildings[rand_num]
@@ -112,7 +128,6 @@ class SimulatedAnnealing:
             edge.clear()
 
         used_edges = []
-        it_num = 0
 
         for i in range(rand_num_of_edges):
             rand_edge = random.randint(0, len(node_edges) - 1)
@@ -124,7 +139,7 @@ class SimulatedAnnealing:
                     else:
                         type_of_op = possible_of_overhead[random.randint(0, 3)]
                     node_edges[rand_edge].add_optical_fibre(type_of_op)
-                    
+        neighbourhood_solution.calculate_objective_function()
         return neighbourhood_solution
         
     def check_network_correctness(self, network: OpticalFibreNetwork) -> bool:
