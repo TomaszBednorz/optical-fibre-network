@@ -146,8 +146,8 @@ class SimulatedAnnealing:
         if correct == False:
             return correct
 
-        s = network.START_POINT.id
-        d = dict()            # Checking optical fibers
+        s = network.START_POINT.id                                  # Checking optical fibers, Bellman-Ford algorithm
+        d = dict()            
         p = dict()
 
         for node in network.all_nodes:
@@ -160,17 +160,28 @@ class SimulatedAnnealing:
             for node in network.all_nodes:
                 for edge in network.edges[node]:
                     if edge.type != None:
-                        if d[edge.end.id] > d[node.id] + edge.distance:    # chyba moze byc tez edge.start
-                            d[edge.end.id] =  d[node.id] + edge.distance
-                            p[edge.end.id] = node.id
+                        if node.id == edge.start.id:
+                            if d[edge.end.id] > d[node.id] + edge.distance:   
+                                d[edge.end.id] =  d[node.id] + edge.distance
+                                p[edge.end.id] = node.id
+                        elif node.id == edge.end.id:
+                            if d[edge.start.id] > d[node.id] + edge.distance:    
+                                d[edge.start.id] =  d[node.id] + edge.distance
+                                p[edge.start.id] = node.id
         
-        for node in network.all_nodes:    # Raczej nie będzie cyklu więc będzie można usunąć
+        for node in network.all_nodes:   
             for edge in network.edges[node]:
                 if edge.type != None:
-                    if d[edge.end.id] <= d[node.id] + edge.distance:   
-                        continue
-                    else:
-                        print("Cykl ujemny!")
+                    if node.id == edge.start.id:
+                        if d[edge.end.id] <= d[node.id] + edge.distance:   
+                            continue
+                        else:
+                            print("Cykl ujemny!")
+                    elif node.id == edge.end.id:
+                        if d[edge.start.id] <= d[node.id] + edge.distance:   
+                            continue
+                        else:
+                            print("Cykl ujemny!")
 
         edges_ = {}
         list_edges = network.dct_to_list()
