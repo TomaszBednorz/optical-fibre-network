@@ -371,7 +371,7 @@ class OpticalFibreNetwork:
                     best_node_4th_q = node
             self.add_edge(current_node, best_node_4th_q)
 
-    def visualization(self, show_id = False) -> None:
+    def visualization(self, show_id = False, show_empty_edge = False) -> None:
         # Create the map plotter:
         apikey = 'AIzaSyBal6A70lGi745Rm8Fdk0o5FZEleeHhBLI' # (your API key here)
         gmap = gmplot.GoogleMapPlotter(50.165997404672005, 19.625832486967628, 17, apikey=apikey)
@@ -407,10 +407,16 @@ class OpticalFibreNetwork:
                     color = 'green'
                 else:
                     color = 'gray'
-                edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
-                        (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
-                gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
-                gmap.text((edges_[i].start.vert_coord + edges_[i].end.vert_coord)/2, (edges_[i].start.hori_coord + edges_[i].end.hori_coord)/2, str(edges_[i].idx),color = 'dimgray')
+                if edges_[i].type != None:
+                    edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
+                            (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
+                    gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
+                    gmap.text((edges_[i].start.vert_coord + edges_[i].end.vert_coord)/2, (edges_[i].start.hori_coord + edges_[i].end.hori_coord)/2, str(edges_[i].idx),color = 'dimgray')
+                elif edges_[i].type == None and show_empty_edge == True:
+                    edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
+                            (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
+                    gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
+                    gmap.text((edges_[i].start.vert_coord + edges_[i].end.vert_coord)/2, (edges_[i].start.hori_coord + edges_[i].end.hori_coord)/2, str(edges_[i].idx),color = 'dimgray')
 
         # Create START_POINT
         if show_id == True:

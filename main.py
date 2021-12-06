@@ -14,8 +14,9 @@ if __name__ == "__main__":
 
     sa.actual_solution.calculate_objective_function()
     cost = sa.actual_solution.get_cost()
-    sa.actual_solution.visualization(True)                     # Add as an argument True to display the id's on map
-
+    sa.actual_solution.visualization(True,False)                     # First argument: True to display the id's on map, Secound argument: True to display empty edges
+    x = sa.check_network_correctness(sa.actual_solution)
+    print(x)
 
     for key in sa.actual_solution.edges:
         for el in sa.actual_solution.edges[key]:
@@ -26,6 +27,12 @@ if __name__ == "__main__":
             num = len(el.optical_fibres)
             print("{} : {} dist: {} type: {} len: {}".format(a, b, dist, ty, num))
 
+    amount = 0
+    for node in sa.actual_solution.all_nodes:
+        for device in node.devices: 
+            amount += device.amount       
+    print(amount)
+    
     print("Objective function cost: {} zł".format(cost))
     sa.empty_network.calculate_objective_function()
     print(sa.empty_network.cost)
