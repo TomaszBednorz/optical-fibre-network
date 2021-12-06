@@ -10,7 +10,7 @@ if __name__ == "__main__":
     network.add_poles_from_txt('poles_for_tests.txt')
 
     sa = SimulatedAnnealing(network)
-    sa.create_beginning_solution()
+    sa.create_beginning_solution(100)
 
     sa.actual_solution.calculate_objective_function()
     cost = sa.actual_solution.get_cost()
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         for device in node.devices: 
             amount += device.amount       
     print(amount)
-    
+
     print("Objective function cost: {} zł".format(cost))
     sa.empty_network.calculate_objective_function()
     print(sa.empty_network.cost)
