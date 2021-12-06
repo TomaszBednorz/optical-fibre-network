@@ -20,7 +20,7 @@ assembly_cost_1m = {
     None : 0,
     FiberType.UNIVERSAL : 10,
     FiberType.OVERHEAD : 10,
-    FiberType.SEWERAGE : 30
+    FiberType.SEWERAGE : 50
 }
 
 
@@ -125,6 +125,11 @@ class Edge:
 
         self.price = self.calculate_price()                 # Update edge price
         self.max_capacity = self.calculate_actual_capacity  # Update max edge capacity
+
+    def clear(self):
+        self.optical_fibres.clear()
+        self.price = self.calculate_price()                   # Update edge price
+        self.max_capacity = self.calculate_actual_capacity()  # Update max edge capacity
 
 class OpticalFibreNetwork:
     def __init__(self) -> None:
