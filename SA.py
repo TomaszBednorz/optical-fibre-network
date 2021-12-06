@@ -28,7 +28,7 @@ class SimulatedAnnealing:
         self.empty_network = network
         self.actual_solution = None
         self.best_solution = None
-
+        self.temporary_solution = None
         self.MAX_OVERHEAD_DISTANCE = 40  # [m]
 
 
@@ -108,9 +108,8 @@ class SimulatedAnnealing:
         node_edges = neighbourhood_solution.edges[node]
         rand_num_of_edges = random.randint(1, len(node_edges) - 1)
         
-        for edge in node_edges:  # Delete all edges of this node and add empty edges
-            neighbourhood_solution.remove_edge(edge.idx)  
-            neighbourhood_solution.add_edge(edge.start, edge.end)
+        for edge in node_edges:  # clear all optical fibres in edges of node
+            edge.clear()
 
         used_edges = []
         it_num = 0
@@ -128,10 +127,6 @@ class SimulatedAnnealing:
                     
         return neighbourhood_solution
         
-        
-
-
-
     def check_network_correctness(self, network: OpticalFibreNetwork) -> bool:
         number_of_buildings = len(network.buildings)                # Chcecking devices
         number_of_devices = 0
@@ -145,8 +140,8 @@ class SimulatedAnnealing:
             correct = True
         else: 
             correct =  False
-        print("Number of devices: {} , number of buildings that can be connected to the device: {} .".format(number_of_devices,number_of_max_buildings))
-        print("Number of buildings: {} .".format(number_of_buildings))
+        # print("Number of devices: {} , number of buildings that can be connected to the device: {} .".format(number_of_devices,number_of_max_buildings))
+        # print("Number of buildings: {} .".format(number_of_buildings))
 
         if correct == False:
             return correct
@@ -189,11 +184,11 @@ class SimulatedAnnealing:
                         else:
                             edges_[edge_.idx] = 1
                 current = p[current]
-        print(edges_)
+        # print(edges_)
         for ed in edges_:
             for ed_ in list_edges:
                 if ed == ed_.idx:
-                    print(edges_[ed],ed_.max_capacity)
+                    # print(edges_[ed],ed_.max_capacity)
                     max = ed_.max_capacity
                     break
             if edges_[ed] <= max:
