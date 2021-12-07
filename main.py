@@ -10,71 +10,73 @@ if __name__ == "__main__":
     network.add_poles_from_txt('poles_for_tests.txt')
 
     sa = SimulatedAnnealing(network)
+    sa.run_alghoritm()
+    sa.best_solution.visualization(True,False) 
+    print("Objective function cost: {} zł".format(sa.best_solution.cost))
+    # sol_corect = False
 
-    sol_corect = False
-
-    while not sol_corect:
-        sa.create_beginning_solution(25)
-        sol_corect = sa.check_network_correctness(sa.actual_solution)
+    # while not sol_corect:
+    #     sa.create_beginning_solution(25)
+    #     sol_corect = sa.check_network_correctness(sa.actual_solution)
         
 
-    sa.actual_solution.calculate_objective_function()
-    cost = sa.actual_solution.get_cost()
-    sa.actual_solution.visualization(True,False)                     # First argument: True to display the id's on map, Secound argument: True to display empty edges
-    x = sa.check_network_correctness(sa.actual_solution)
-    print(x)
+    # sa.actual_solution.calculate_objective_function()
+    # cost = sa.actual_solution.get_cost()
+    # sa.actual_solution.visualization(True,False)                     # First argument: True to display the id's on map, Secound argument: True to display empty edges
+    # x = sa.check_network_correctness(sa.actual_solution)
+    # print(x)
 
-    for _ in range(1):
-        for _ in range(300):
-            sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.BUILDING)
-            sa.temporary_solution.calculate_objective_function()
-            var = sa.check_network_correctness(sa.temporary_solution)
-            if sa.temporary_solution.cost < cost + 1000 and var:
-                sa.actual_solution = sa.temporary_solution
-                cost = sa.actual_solution.cost
-                print(sa.actual_solution.cost)
+    # for _ in range(1):
+    #     for _ in range(300):
+    #         sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.BUILDING)
+    #         sa.temporary_solution.calculate_objective_function()
+    #         var = sa.check_network_correctness(sa.temporary_solution)
+    #         if sa.temporary_solution.cost < cost + 1000 and var:
+    #             sa.actual_solution = sa.temporary_solution
+    #             cost = sa.actual_solution.cost
+    #             print(sa.actual_solution.cost)
 
-            sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.POLE)
-            sa.temporary_solution.calculate_objective_function()
-            var = sa.check_network_correctness(sa.temporary_solution)
-            if sa.temporary_solution.cost < cost + 1000 and var:
-                sa.actual_solution = sa.temporary_solution
-                cost = sa.actual_solution.cost
-                print(sa.actual_solution.cost)
+    #         sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.POLE)
+    #         sa.temporary_solution.calculate_objective_function()
+    #         var = sa.check_network_correctness(sa.temporary_solution)
+    #         if sa.temporary_solution.cost < cost + 1000 and var:
+    #             sa.actual_solution = sa.temporary_solution
+    #             cost = sa.actual_solution.cost
+    #             print(sa.actual_solution.cost)
         
-        for _ in range(300):
-            sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.BUILDING)
-            sa.temporary_solution.calculate_objective_function()
-            var = sa.check_network_correctness(sa.temporary_solution)
-            if sa.temporary_solution.cost < cost + 500 and var:
-                sa.actual_solution = sa.temporary_solution
-                cost = sa.actual_solution.cost
-                print(sa.actual_solution.cost)
+    #     for _ in range(300):
+    #         sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.BUILDING)
+    #         sa.temporary_solution.calculate_objective_function()
+    #         var = sa.check_network_correctness(sa.temporary_solution)
+    #         if sa.temporary_solution.cost < cost + 500 and var:
+    #             sa.actual_solution = sa.temporary_solution
+    #             cost = sa.actual_solution.cost
+    #             print(sa.actual_solution.cost)
 
-            sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.POLE)
-            sa.temporary_solution.calculate_objective_function()
-            var = sa.check_network_correctness(sa.temporary_solution)
-            if sa.temporary_solution.cost < cost + 500 and var:
-                sa.actual_solution = sa.temporary_solution
-                cost = sa.actual_solution.cost
-                print(sa.actual_solution.cost)
+    #         sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.POLE)
+    #         sa.temporary_solution.calculate_objective_function()
+    #         var = sa.check_network_correctness(sa.temporary_solution)
+    #         if sa.temporary_solution.cost < cost + 500 and var:
+    #             sa.actual_solution = sa.temporary_solution
+    #             cost = sa.actual_solution.cost
+    #             print(sa.actual_solution.cost)
 
-        for _ in range(300):
-            sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.BUILDING)
-            sa.temporary_solution.calculate_objective_function()
-            var = sa.check_network_correctness(sa.temporary_solution)
-            if sa.temporary_solution.cost < cost and var:
-                sa.actual_solution = sa.temporary_solution
-                cost = sa.actual_solution.cost
-                print(sa.actual_solution.cost)
+    #     for _ in range(300):
+    #         sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.BUILDING)
+    #         sa.temporary_solution.calculate_objective_function()
+    #         var = sa.check_network_correctness(sa.temporary_solution)
+    #         if sa.temporary_solution.cost < cost and var:
+    #             sa.actual_solution = sa.temporary_solution
+    #             cost = sa.actual_solution.cost
+    #             print(sa.actual_solution.cost)
 
-            sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.POLE)
-            sa.temporary_solution.calculate_objective_function()
-            var = sa.check_network_correctness(sa.temporary_solution)
-            if sa.temporary_solution.cost < cost and var:
-                sa.actual_solution = sa.temporary_solution
-                cost = sa.actual_solution.cost
-                print(sa.actual_solution.cost)
+    #         sa.temporary_solution = sa.update_node_neighbourhood(4, NodeType.POLE)
+    #         sa.temporary_solution.calculate_objective_function()
+    #         var = sa.check_network_correctness(sa.temporary_solution)
+    #         if sa.temporary_solution.cost < cost and var:
+    #             sa.actual_solution = sa.temporary_solution
+    #             cost = sa.actual_solution.cost
+    #             print(sa.actual_solution.cost)
 
 
             
@@ -108,9 +110,9 @@ if __name__ == "__main__":
     #         amount += device.amount       
     # print(amount)
     
-    print("Objective function cost: {} zł".format(cost))
-    sa.empty_network.calculate_objective_function()
-    print(sa.empty_network.cost)
+    # print("Objective function cost: {} zł".format(cost))
+    # sa.empty_network.calculate_objective_function()
+    # print(sa.empty_network.cost)
     # network.calculate_objective_function()
     # cost = network.get_cost()
     # network.visualization(True)                     # Add as an argument True to display the id's on map
