@@ -2,6 +2,7 @@ from numpy import number
 from data_structures import *
 import random
 import copy
+import numpy as np
 
 # Devices: cost, buildings_amount, id
 dev_4 = Device(863.00, 4, 1)
@@ -30,6 +31,9 @@ class SimulatedAnnealing:
         self.best_solution = None
         self.temporary_solution = None
         self.MAX_OVERHEAD_DISTANCE = 40  # [m]
+        self.max_temperature = 1000
+        self.max_iterations = 1000
+        self.alpha = 0.7
 
 
     def create_beginning_solution(self, num_of_iterations: int) -> None:
@@ -223,5 +227,40 @@ class SimulatedAnnealing:
                 return False
         return True
 
+    def calculate_temperature(self,i) -> float:
+        return self.max_temperature * ((self.max_iterations - i)/self.max_iterations)
+        # return self.max_temperature /  (1 + self.alpha * i)
+
     def run_alghoritm(self) -> None:
-        pass
+        sol_corect = False
+        while not sol_corect:
+            self.create_beginning_solution(25)
+            sol_corect = self.check_network_correctness(self.actual_solution)
+        self.best_solution = self.actual_solution
+        iterations = 0
+        L = 10
+        T = self.max_temperature
+        while iterations < self.max_iterations:
+            for _ in range(1,L):
+                number = random.randint(1,10)
+                if 1 <= number <=5:
+                    self.temporary_solution = self.update_node_neighbourhood(4,NodeType.BUILDING)
+                elif 6 <= number <=9:
+                    self.temporary_solution = self.update_node_neighbourhood(4,NodeType.POLE)
+                elif number == 10:
+                    self.temporary_solution = self.update_device_neighbourhood()
+                if self.check_network_correctness(self.temporary_solution):
+                    self.temporary_solution.calculate_objective_function()
+                    self.actual_solution.calculate_objective_function()
+                    print(self.temporary_solution.get_cost())
+                    print(self.actual_solution.get_cost())
+                    if self.temporary_solution.cost <= self.actual_solution.cost:
+                        self.best_solution = self.temporary_solution
+                        print('A')
+                    elif np.exp(-(self.temporary_solution.get_cost() - self.actual_solution.get_cost())/ T) > random.random():
+                        self.best_solution = self.temporary_solution
+                        print('B')
+                        # print(np.exp(-(self.temporary_solution.cost - self.actual_solution.cost)/ T))
+            iterations += 1
+            T = self.calculate_temperature(iterations)
+            # print(iterations,T)
