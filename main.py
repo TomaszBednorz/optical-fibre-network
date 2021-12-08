@@ -6,12 +6,12 @@ from SA import *
 if __name__ == "__main__":
     network = OpticalFibreNetwork()
     network.add_starting_point(50.16429619810853, 19.626773362067187)
-    network.add_buildings_from_txt('buildings_for_tests.txt')
-    network.add_poles_from_txt('poles_for_tests.txt')
+    network.add_buildings_from_txt('buildings.txt')
+    network.add_poles_from_txt('poles.txt')
 
     sa = SimulatedAnnealing(network)
     sa.run_alghoritm()
-    sa.best_solution.visualization(True,False) 
+    sa.best_solution.visualization2(True,False) 
     print("Objective function cost: {} zł".format(sa.best_solution.cost))
     # sol_corect = False
 
@@ -80,18 +80,18 @@ if __name__ == "__main__":
 
 
             
-        # for _ in range(3):
-        #     new_sol = sa.update_node_neighbourhood(4, NodeType.BUILDING)
-        #     new_sol.calculate_objective_function()
-        #     sa.actual_solution = new_sol
-        #     cost = sa.actual_solution.cost
-        #     print(sa.actual_solution.cost)
+    #     for _ in range(3):
+    #         new_sol = sa.update_node_neighbourhood(4, NodeType.BUILDING)
+    #         new_sol.calculate_objective_function()
+    #         sa.actual_solution = new_sol
+    #         cost = sa.actual_solution.cost
+    #         print(sa.actual_solution.cost)
 
-        #     new_sol = sa.update_node_neighbourhood(4, NodeType.POLE)
-        #     new_sol.calculate_objective_function()
-        #     sa.actual_solution = new_sol
-        #     cost = sa.actual_solution.cost
-        #     print(sa.actual_solution.cost)
+    #         new_sol = sa.update_node_neighbourhood(4, NodeType.POLE)
+    #         new_sol.calculate_objective_function()
+    #         sa.actual_solution = new_sol
+    #         cost = sa.actual_solution.cost
+    #         print(sa.actual_solution.cost)
 
 
 

@@ -128,6 +128,7 @@ class Edge:
 
     def clear(self):
         self.optical_fibres.clear()
+        # self.type = None
         self.price = self.calculate_price()                   # Update edge price
         self.max_capacity = self.calculate_actual_capacity()  # Update max edge capacity
 
@@ -417,6 +418,70 @@ class OpticalFibreNetwork:
                             (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
                     gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
                     gmap.text((edges_[i].start.vert_coord + edges_[i].end.vert_coord)/2, (edges_[i].start.hori_coord + edges_[i].end.hori_coord)/2, str(edges_[i].idx),color = 'dimgray')
+                elif edges_[i].type == None and show_empty_edge == True:
+                    edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
+                            (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
+                    gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
+                    gmap.text((edges_[i].start.vert_coord + edges_[i].end.vert_coord)/2, (edges_[i].start.hori_coord + edges_[i].end.hori_coord)/2, str(edges_[i].idx),color = 'dimgray')
+
+        # Create START_POINT
+        if show_id == True:
+            gmap.text(self.START_POINT.vert_coord, self.START_POINT.hori_coord, str(self.START_POINT.id))
+        gmap.scatter([self.START_POINT.vert_coord], [self.START_POINT.hori_coord], color='darkviolet', size=3, marker=False,alpha = 1,symbol = '+')
+
+        # Draw the map to an HTML file:
+        gmap.draw('map.html')
+
+    def visualization2(self, show_id = False, show_empty_edge = False) -> None:
+        # Create the map plotter:
+        apikey = 'AIzaSyBal6A70lGi745Rm8Fdk0o5FZEleeHhBLI' # (your API key here)
+        gmap = gmplot.GoogleMapPlotter(50.165997404672005, 19.625832486967628, 17, apikey=apikey)
+
+        # Highlight buildings:
+        if len(self.buildings) != 0:
+            buildings_ = [0 for i in range(len(self.buildings))]
+            for i in range(len(self.buildings)):
+                buildings_[i] = (self.buildings[i].vert_coord, self.buildings[i].hori_coord)
+                if show_id == True:
+                    d_ =[]
+                    for dev in self.buildings[i].devices:
+                        d_.append(dev.id)
+                    gmap.text(self.buildings[i].vert_coord, self.buildings[i].hori_coord, str(self.buildings[i].id) + ' ' + str(d_))
+            building_y, building_x = zip(*buildings_)
+            gmap.scatter(building_y, building_x, color='orangered', size=4, marker=False,alpha = 1)
+        # Highlight poles:
+        if len(self.poles) != 0:
+            poles_ = [0 for i in range(len(self.poles))]
+            for i in range(len(self.poles)):
+                poles_[i] = (self.poles[i].vert_coord,self.poles[i].hori_coord)
+                if show_id == True:
+                    d_ =[]
+                    for dev in self.poles[i].devices:
+                        d_.append(dev.id)
+                    gmap.text(self.poles[i].vert_coord, self.poles[i].hori_coord,  str(self.poles[i].id) + ' ' + str(d_))
+            poles_y, poles_x = zip(*poles_)
+            gmap.scatter(poles_y, poles_x, color='k', size=2, marker=False, symbol = 'x')
+
+        # Create connection between two nodes
+        if len(self.edges) != 0:
+            edges_ = self.dct_to_list()
+            for i in range(len(edges_)):
+                if edges_[i].type == FiberType.OVERHEAD:
+                    color = 'royalblue'
+                elif edges_[i].type == FiberType.UNIVERSAL:
+                    color = 'gold'   
+                elif edges_[i].type == FiberType.SEWERAGE:
+                    color = 'green'
+                else:
+                    color = 'gray'
+                if edges_[i].type != None and len(edges_[i].optical_fibres) != 0:
+                    edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
+                            (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
+                    gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
+                    o_ =[]
+                    for of in edges_[i].optical_fibres:
+                        o_.append(of.id)
+                    gmap.text((edges_[i].start.vert_coord + edges_[i].end.vert_coord)/2, (edges_[i].start.hori_coord + edges_[i].end.hori_coord)/2, str(edges_[i].idx) + ' ' + str(o_),color = 'dimgray')
                 elif edges_[i].type == None and show_empty_edge == True:
                     edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
                             (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
