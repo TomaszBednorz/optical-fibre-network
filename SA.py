@@ -31,8 +31,8 @@ class SimulatedAnnealing:
         self.best_solution = None
         self.temporary_solution = None
         self.MAX_OVERHEAD_DISTANCE = 40  # [m]
-        self.max_temperature = 1000
-        self.max_iterations = 1000
+        self.max_temperature = 100
+        self.max_iterations = 200
         self.alpha = 0.7
 
 
@@ -236,6 +236,7 @@ class SimulatedAnnealing:
         while not sol_corect:
             self.create_beginning_solution(25)
             sol_corect = self.check_network_correctness(self.actual_solution)
+        self.actual_solution.visualization2(True,False) 
         self.best_solution = self.actual_solution
         iterations = 0
         L = 10
@@ -255,10 +256,11 @@ class SimulatedAnnealing:
                     print(self.temporary_solution.get_cost())
                     print(self.actual_solution.get_cost())
                     if self.temporary_solution.cost <= self.actual_solution.cost:
-                        self.best_solution = self.temporary_solution
+                        self.actual_solution = self.temporary_solution
+                        self.best_solution = self.actual_solution
                         print('A')
                     elif np.exp(-(self.temporary_solution.get_cost() - self.actual_solution.get_cost())/ T) > random.random():
-                        self.best_solution = self.temporary_solution
+                        self.actual_solution = self.temporary_solution
                         print('B')
                         # print(np.exp(-(self.temporary_solution.cost - self.actual_solution.cost)/ T))
             iterations += 1
