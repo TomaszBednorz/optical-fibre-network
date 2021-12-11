@@ -89,7 +89,9 @@ class Edge:
         return distance                             # Return distance in [m]
         
     def calculate_price(self) -> float:  
-        assembly_cost = self.distance * assembly_cost_1m[self.type]
+        assembly_cost = 0
+        if len(self.optical_fibres) != 0:
+            assembly_cost = self.distance * assembly_cost_1m[self.type]
         optical_fiber_cost = 0
         for opt_fib in self.optical_fibres:
             optical_fiber_cost += self.distance * opt_fib.price
@@ -222,7 +224,7 @@ class OpticalFibreNetwork:
         node.add_device(new_dev)
         self.devices_idxs.append(idx)
 
-    def remove_device(self, idx: int) -> None:  # TODO: New implementation (adjacency list needed)
+    def remove_device(self, idx: int) -> None:
         for node in list(self.devices):
             for dev in self.devices[node]:
                 if dev.idx == idx:
@@ -232,6 +234,7 @@ class OpticalFibreNetwork:
             if len(self.devices[node]) == 0:
                 del self.devices[node]
         self.devices_idxs.remove(idx)
+        self.devices_idxs.sort()
 
     def add_edge(self, node_start: Node, node_end: Node) -> None:
         edge_exist = 0
@@ -282,7 +285,7 @@ class OpticalFibreNetwork:
             if len(self.edges[node]) == 0:
                 del self.edges[node]
         self.edges_idxs.remove(idx)
-    
+
     def dct_to_list(self):
         list_ = []
         for node in self.edges:
@@ -303,6 +306,7 @@ class OpticalFibreNetwork:
         for node in self.edges:
             for edge in self.edges[node]:
                 if edge.idx not in idx_:
+                    edge.calculate_price()
                     self.cost += edge.price
                     idx_.append(edge.idx)
 
@@ -413,7 +417,7 @@ class OpticalFibreNetwork:
                     color = 'green'
                 else:
                     color = 'gray'
-                if edges_[i].type != None:
+                if edges_[i].type != None and len(edges_[i].optical_fibres) != 0:
                     edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
                             (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
                     gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
