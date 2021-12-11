@@ -1,6 +1,6 @@
 from data_structures import *
 from SA import *
-
+import matplotlib.pyplot as plt
 
 
 if __name__ == "__main__":
@@ -13,6 +13,15 @@ if __name__ == "__main__":
     sa.run_alghoritm()
     sa.best_solution.visualization2(True,False) 
     print("Objective function cost: {} zł".format(sa.best_solution.cost))
+
+    history = sa.get_objective_function_history()
+
+    plt.plot(history)
+    plt.grid()
+    plt.xlabel("Iteration")
+    plt.ylabel("Cost")
+    plt.title("Objective function cost in time")
+    plt.show()
     # sol_corect = False
 
     # while not sol_corect:
