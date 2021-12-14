@@ -9,7 +9,7 @@ if __name__ == "__main__":
     network.add_buildings_from_txt('buildings.txt')
     network.add_poles_from_txt('poles.txt')
 
-    sa = SimulatedAnnealing(network)
+    sa = SimulatedAnnealing(network,100,1000)
     sa.run_alghoritm()
     sa.best_solution.visualization2(True,False) 
     print("Objective function cost: {} zł".format(sa.best_solution.cost))

@@ -25,15 +25,15 @@ of_sewerage_3 = OpticalFibre(3.75, 12, FiberType.SEWERAGE, 8)
 of_sewerage_4 = OpticalFibre(6.03, 24, FiberType.SEWERAGE, 9)
 
 class SimulatedAnnealing:
-    def __init__(self, network: OpticalFibreNetwork) -> None:
+    def __init__(self, network: OpticalFibreNetwork, max_temperature: float, max_iterations: int, alpha = 0.7) -> None:
         self.empty_network = network
         self.actual_solution = None
         self.best_solution = None
         self.temporary_solution = None
         self.MAX_OVERHEAD_DISTANCE = 40  # [m]
-        self.max_temperature = 100
-        self.max_iterations = 100
-        self.alpha = 0.7
+        self.max_temperature = max_temperature
+        self.max_iterations = max_iterations
+        self.alpha = alpha
         self.objective_function_history = []
 
     def create_beginning_solution(self) -> None:
@@ -184,8 +184,8 @@ class SimulatedAnnealing:
                     node_edges[rand_edge].add_optical_fibre(type_of_op)
             neighbourhood_solution.calculate_objective_function()
         return neighbourhood_solution
-        
-    def check_network_correctness(self, network: OpticalFibreNetwork) -> bool:
+
+    def check_devices_correctness(self,network: OpticalFibreNetwork) -> bool:
         number_of_buildings = len(network.buildings)                # Chcecking devices
         number_of_devices = 0
         number_of_max_buildings = 0
@@ -195,15 +195,11 @@ class SimulatedAnnealing:
                     number_of_devices += 1
                     number_of_max_buildings += device.amount    
         if number_of_max_buildings >= number_of_buildings:
-            correct = True
+            return True
         else: 
-            correct =  False
-        # print("Number of devices: {} , number of buildings that can be connected to the device: {} .".format(number_of_devices,number_of_max_buildings))
-        # print("Number of buildings: {} .".format(number_of_buildings))
+            return False
 
-        if correct == False:
-            return correct
-
+    def check_fibers_correctness(self,network: OpticalFibreNetwork) -> bool:
         s = network.START_POINT.id                                  # Checking optical fibers, Bellman-Ford algorithm
         d = dict()            
         p = dict()
@@ -265,6 +261,16 @@ class SimulatedAnnealing:
             else:
                 return False
         return True
+
+    def check_network_correctness(self, network: OpticalFibreNetwork) -> bool:
+        I = self.check_devices_correctness(network)
+        if I == False:
+            return False
+        II = self.check_fibers_correctness(network)
+        if II == False:
+            return False
+        else:
+            return True
 
     def calculate_temperature(self,i) -> float:
         return self.max_temperature * ((self.max_iterations - i)/self.max_iterations)

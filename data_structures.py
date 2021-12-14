@@ -478,10 +478,17 @@ class OpticalFibreNetwork:
                     color = 'green'
                 else:
                     color = 'gray'
+                width = 0
+                if edges_[i].max_capacity <= 5:
+                    width = 2
+                elif 5 < edges_[i].max_capacity <=13:
+                    width = 4
+                elif edges_[i].max_capacity > 13:
+                    width = 6
                 if edges_[i].type != None and len(edges_[i].optical_fibres) != 0:
                     edge_ = zip(*[(edges_[i].start.vert_coord, edges_[i].start.hori_coord),
                             (edges_[i].end.vert_coord, edges_[i].end.hori_coord)])
-                    gmap.plot(*edge_, edge_width=4, color=color, alpha = 0.6)
+                    gmap.plot(*edge_, edge_width=width, color=color, alpha = 0.6)
                     o_ =[]
                     for of in edges_[i].optical_fibres:
                         o_.append(of.id)
