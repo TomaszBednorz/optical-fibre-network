@@ -3,6 +3,7 @@ from data_structures import *
 import random
 import copy
 import numpy as np
+import math
 
 # Devices: cost, buildings_amount, id
 dev_4 = Device(863.00, 4, 1)
@@ -31,6 +32,7 @@ class SA_parameters:
         self.devices = True
         self.max_temperature = 100
         self.max_iterations = 100
+        self.max_subiterations = 10
         self.alpha = 100
 
 class SimulatedAnnealing:
@@ -75,19 +77,11 @@ class SimulatedAnnealing:
                 visited_edges.append(current_edge)
             
                 if current_edge.distance >= self.MAX_OVERHEAD_DISTANCE:
-                    # current_edge.add_optical_fibre(of_sewerage_1)
-                    current_edge.add_optical_fibre(of_sewerage_4)
-                    current_edge.add_optical_fibre(of_sewerage_4)
+                    for _ in range(0, math.ceil(len(self.actual_solution.buildings) / 20)):
+                        current_edge.add_optical_fibre(of_sewerage_4)
                 else:
-                    # current_edge.add_optical_fibre(of_overhead_1)
-                    current_edge.add_optical_fibre(of_overhead_4)
-                    current_edge.add_optical_fibre(of_overhead_4)
-            # else:
-            #     if current_edge in visited_edges:
-            #         if current_edge.type == FiberType.OVERHEAD:
-            #             current_edge.add_optical_fibre(of_overhead_1)
-            #         else:
-            #             current_edge.add_optical_fibre(of_sewerage_1)
+                    for _ in range(0, math.ceil(len(self.actual_solution.buildings) / 20)):
+                        current_edge.add_optical_fibre(of_overhead_4)
 
             if current_node.id == current_edge.start.id:  # Update current node
                 current_node = current_edge.end
@@ -102,14 +96,9 @@ class SimulatedAnnealing:
 
             iterator += 1
 
-            if iterator >= num_of_iterations:  # Add device to node and optical fibre to previous edges every 50 iteration
+            if iterator >= num_of_iterations:  # Add device to node and optical fibre to previous edges every num_of_iterations
                 self.actual_solution.add_device(dev_10, current_node)
                 iterator = 0
-                # for edge in visited_edges:
-                #     if edge.type == FiberType.OVERHEAD:
-                #         edge.add_optical_fibre(of_overhead_1)
-                #     else:
-                #         edge.add_optical_fibre(of_sewerage_1)
 
     def update_device_neighbourhood(self) -> None:
         possible_devices = [dev_4, dev_10, dev_25, dev_60]
@@ -128,19 +117,7 @@ class SimulatedAnnealing:
             neighbourhood_solution.add_device(possible_devices[random.randint(0, 3)], node)
 
         neighbourhood_solution.calculate_objective_function()
-        # ----
-        # random_node = random.randint(0, len(neighbourhood_solution.devices) - 1)  # Number to choose node for optimization
-        # for idx, node in enumerate(neighbourhood_solution.devices):
-        #     if idx == random_node:
-        #         for div in node.devices:  # Delete devices from node
-        #             print(div.idx)
-        #             neighbourhood_solution.remove_device(div.idx)
 
-        #         rand_num_of_devices = random.randint(0, 2) # 0 to 2 devices
-        #         for _ in range(rand_num_of_devices):
-        #             neighbourhood_solution.add_device(possible_devices[random.randint(0, len(possible_devices) - 1)], node)
-        #         break
-        # neighbourhood_solution.calculate_objective_function()
         return neighbourhood_solution
 
     def update_node_neighbourhood(self, type_of_node: NodeType) -> OpticalFibreNetwork:
@@ -293,7 +270,7 @@ class SimulatedAnnealing:
         self.actual_solution.visualization2(True,False) 
         # self.best_solution = self.actual_solution
         iterations = 0
-        L = 10
+        L = self.parameters.max_subiterations
         T = self.parameters.max_temperature
         
         while iterations < self.parameters.max_iterations:
@@ -328,6 +305,7 @@ class SimulatedAnnealing:
                     local_iterations += 1
                     self.temporary_solution.calculate_objective_function()
                     self.actual_solution.calculate_objective_function()
+                    print("Actual objective function cost: {}".format(self.temporary_solution.cost))
                     # print(self.temporary_solution.get_cost())
                     # print(self.actual_solution.get_cost())
                     if self.temporary_solution.cost <= self.actual_solution.cost:
