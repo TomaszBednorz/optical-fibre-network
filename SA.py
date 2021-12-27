@@ -286,8 +286,10 @@ class SimulatedAnnealing:
         iterations = 0
         L = 10
         T = self.max_temperature
+        
         while iterations < self.max_iterations:
-            for _ in range(1,L):
+            local_iterations = 0
+            while local_iterations < L:
                 number = random.randint(1,10)
                 if 1 <= number <=5:
                     self.temporary_solution = self.update_node_neighbourhood(NodeType.BUILDING)
@@ -296,20 +298,22 @@ class SimulatedAnnealing:
                 elif number == 10:
                     self.temporary_solution = self.update_device_neighbourhood()
                 if self.check_network_correctness(self.temporary_solution):
+                    local_iterations += 1
                     self.temporary_solution.calculate_objective_function()
                     self.actual_solution.calculate_objective_function()
-                    print(self.temporary_solution.get_cost())
-                    print(self.actual_solution.get_cost())
+                    # print(self.temporary_solution.get_cost())
+                    # print(self.actual_solution.get_cost())
                     if self.temporary_solution.cost <= self.actual_solution.cost:
                         self.actual_solution = self.temporary_solution
                         self.best_solution = self.actual_solution
-                        print('A')
+                        # print('A')
                     elif np.exp(-(self.temporary_solution.get_cost() - self.actual_solution.get_cost())/ T) > random.random():
                         self.actual_solution = self.temporary_solution
-                        print('B')
+                        # print('B')
                         # print(np.exp(-(self.temporary_solution.cost - self.actual_solution.cost)/ T))
                     self.objective_function_history.append(self.temporary_solution.cost)
             iterations += 1
+            print(iterations)
             T = self.calculate_temperature(iterations)
             # print(iterations,T)
 
