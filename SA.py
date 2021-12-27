@@ -24,16 +24,25 @@ of_sewerage_2 = OpticalFibre(2.89, 8, FiberType.SEWERAGE, 7)
 of_sewerage_3 = OpticalFibre(3.75, 12, FiberType.SEWERAGE, 8)
 of_sewerage_4 = OpticalFibre(6.03, 24, FiberType.SEWERAGE, 9)
 
+class SA_parameters:
+    def __init__(self) -> None:
+        self.buildings = True
+        self.poles = True
+        self.devices = True
+        self.max_temperature = 100
+        self.max_iterations = 100
+        self.alpha = 100
+
 class SimulatedAnnealing:
-    def __init__(self, network: OpticalFibreNetwork, max_temperature: float, max_iterations: int, alpha = 0.7) -> None:
+    def __init__(self, network: OpticalFibreNetwork, param: SA_parameters) -> None:
         self.empty_network = network
         self.actual_solution = None
         self.best_solution = None
         self.temporary_solution = None
         self.MAX_OVERHEAD_DISTANCE = 40  # [m]
-        self.max_temperature = max_temperature
-        self.max_iterations = max_iterations
-        self.alpha = alpha
+
+        self.parameters = param
+
         self.objective_function_history = []
 
     def create_beginning_solution(self) -> None:
@@ -273,7 +282,7 @@ class SimulatedAnnealing:
             return True
 
     def calculate_temperature(self,i) -> float:
-        return self.max_temperature * ((self.max_iterations - i)/self.max_iterations)
+        return self.parameters.max_temperature * ((self.parameters.max_iterations - i)/self.parameters.max_iterations)
         # return self.max_temperature /  (1 + self.alpha * i)
 
     def run_alghoritm(self) -> None:
@@ -285,17 +294,35 @@ class SimulatedAnnealing:
         # self.best_solution = self.actual_solution
         iterations = 0
         L = 10
-        T = self.max_temperature
+        T = self.parameters.max_temperature
         
-        while iterations < self.max_iterations:
+        while iterations < self.parameters.max_iterations:
             local_iterations = 0
             while local_iterations < L:
-                number = random.randint(1,10)
-                if 1 <= number <=5:
+                if self.parameters.buildings and self.parameters.poles and self.parameters.devices:
+                    number = random.randint(1,9)
+                elif self.parameters.buildings and self.parameters.poles:
+                    number = random.randint(1,8)
+                elif self.parameters.buildings and self.parameters.devices:
+                    number = random.randint(0,5)
+                    if number == 5:
+                        number = 9
+                elif self.parameters.poles and self.parameters.devices:
+                    number = random.randint(5,9)
+                elif self.parameters.buildings:
+                    number = random.randint(1,4)
+                elif self.parameters.poles:
+                    number = random.randint(5,8)
+                elif self.parameters.devices:
+                    number = random.randint(9,9)
+                else:
+                    print("Error! Choose something to optimalization!")
+
+                if 1 <= number <=4:
                     self.temporary_solution = self.update_node_neighbourhood(NodeType.BUILDING)
-                elif 6 <= number <=9:
+                elif 5 <= number <=8:
                     self.temporary_solution = self.update_node_neighbourhood(NodeType.POLE)
-                elif number == 10:
+                elif number == 9:
                     self.temporary_solution = self.update_device_neighbourhood()
                 if self.check_network_correctness(self.temporary_solution):
                     local_iterations += 1
