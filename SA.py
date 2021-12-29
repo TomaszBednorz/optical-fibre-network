@@ -38,14 +38,26 @@ class SA_parameters:
 class SimulatedAnnealing:
     def __init__(self, network: OpticalFibreNetwork, param: SA_parameters) -> None:
         self.empty_network = network
+
+        self.begining_solution = None
         self.actual_solution = None
         self.best_solution = None
         self.temporary_solution = None
-        self.MAX_OVERHEAD_DISTANCE = 40  # [m]
 
         self.parameters = param
 
         self.objective_function_history = []
+        self.realizations = [0, 0, 0] # [buildings updates, poles updates, devices updates]
+        self.quality_changes = [0, 0, 0] # [worse objective function cost (not accepted), worse objective function cost (accepted), better objective function cost]
+        self.quality_changes_it = {
+            'worse_not_acepted' : [],
+            'worse_accepted': [],
+            'better' : []
+        }
+        self.MAX_OVERHEAD_DISTANCE = 40  # [m]
+
+
+
 
     def create_beginning_solution(self) -> None:
         self.actual_solution = copy.deepcopy(self.empty_network)
@@ -99,6 +111,7 @@ class SimulatedAnnealing:
             if iterator >= num_of_iterations:  # Add device to node and optical fibre to previous edges every num_of_iterations
                 self.actual_solution.add_device(dev_10, current_node)
                 iterator = 0
+        self.begining_solution = self.actual_solution
 
     def update_device_neighbourhood(self) -> None:
         possible_devices = [dev_4, dev_10, dev_25, dev_60]
@@ -263,12 +276,13 @@ class SimulatedAnnealing:
         # return self.max_temperature /  (1 + self.alpha * i)
 
     def run_alghoritm(self) -> None:
+        self.realizations = [0, 0, 0]
+        self.quality_changes = [0, 0, 0]
         sol_corect = False
         while not sol_corect:
             self.create_beginning_solution()
             sol_corect = self.check_network_correctness(self.actual_solution)
         self.actual_solution.visualization2(True,False) 
-        # self.best_solution = self.actual_solution
         iterations = 0
         L = self.parameters.max_subiterations
         T = self.parameters.max_temperature
@@ -277,50 +291,73 @@ class SimulatedAnnealing:
             local_iterations = 0
             while local_iterations < L:
                 if self.parameters.buildings and self.parameters.poles and self.parameters.devices:
-                    number = random.randint(1,9)
+                    number = random.randint(1,21)
                 elif self.parameters.buildings and self.parameters.poles:
-                    number = random.randint(1,8)
+                    number = random.randint(1,10)
                 elif self.parameters.buildings and self.parameters.devices:
-                    number = random.randint(0,5)
-                    if number == 5:
-                        number = 9
+                    number = random.randint(0,11)
+                    if number == 11:
+                        number = 21
                 elif self.parameters.poles and self.parameters.devices:
-                    number = random.randint(5,9)
+                    number = random.randint(11,21)
                 elif self.parameters.buildings:
-                    number = random.randint(1,4)
+                    number = random.randint(1,10)
                 elif self.parameters.poles:
-                    number = random.randint(5,8)
+                    number = random.randint(11,10)
                 elif self.parameters.devices:
-                    number = random.randint(9,9)
+                    number = random.randint(21,21)
                 else:
                     print("Error! Choose something to optimalization!")
 
-                if 1 <= number <=4:
+                if 1 <= number <=10:
                     self.temporary_solution = self.update_node_neighbourhood(NodeType.BUILDING)
-                elif 5 <= number <=8:
+                elif 11 <= number <=20:
                     self.temporary_solution = self.update_node_neighbourhood(NodeType.POLE)
-                elif number == 9:
+                elif number == 21:
                     self.temporary_solution = self.update_device_neighbourhood()
+
                 if self.check_network_correctness(self.temporary_solution):
                     local_iterations += 1
                     self.temporary_solution.calculate_objective_function()
                     self.actual_solution.calculate_objective_function()
-                    print("Actual objective function cost: {}".format(self.temporary_solution.cost))
-                    # print(self.temporary_solution.get_cost())
-                    # print(self.actual_solution.get_cost())
+                    print("Iteration: {} Objective function cost: {}".format(iterations*10+local_iterations, self.temporary_solution.cost))
+
+                    if 1 <= number <=10:
+                        self.realizations[0] += 1
+                    elif 11 <= number <=20:
+                        self.realizations[1] += 1
+                    elif number == 21:
+                        self.realizations[2] += 1
+
                     if self.temporary_solution.cost <= self.actual_solution.cost:
                         self.actual_solution = self.temporary_solution
                         self.best_solution = self.actual_solution
-                        # print('A')
+                        self.quality_changes[2] += 1
+                        self.quality_changes_it['better'].append(iterations*10+local_iterations)
                     elif np.exp(-(self.temporary_solution.get_cost() - self.actual_solution.get_cost())/ T) > random.random():
                         self.actual_solution = self.temporary_solution
-                        # print('B')
-                        # print(np.exp(-(self.temporary_solution.cost - self.actual_solution.cost)/ T))
+                        self.quality_changes[1] += 1
+                        self.quality_changes_it['worse_accepted'].append(iterations*10+local_iterations)
+                    else:
+                        self.quality_changes[0] += 1
+                        self.quality_changes_it['worse_not_acepted'].append(iterations*10+local_iterations)
+
+
                     self.objective_function_history.append(self.temporary_solution.cost)
             iterations += 1
-            print(iterations)
             T = self.calculate_temperature(iterations)
-            # print(iterations,T)
 
     def get_objective_function_history(self) -> float:
         return self.objective_function_history
+
+
+
+
+
+
+
+
+
+
+
+
