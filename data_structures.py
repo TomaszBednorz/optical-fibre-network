@@ -506,3 +506,56 @@ class OpticalFibreNetwork:
 
         # Draw the map to an HTML file:
         gmap.draw('map.html')
+
+    def get_simple_solution(self):
+        # Form of solution: (Edges, Devices, Cost)
+        # I. Edges
+        # {
+        #   node_idx : set{node_idx, node_idx, ...} (neighbours)
+        #   .
+        #   . 
+        #   .
+        # }
+        # II. Devices
+        # {
+        #   node_idx : [dev_id, ...] (devices)
+        #   .
+        #   .
+        #   .
+        # }
+        # III. Cost - objective function cost
+
+        adjacency_list = dict()
+        devices = dict()
+        cost = self.cost
+
+        for _, value in self.edges.items():
+            for edge in value:
+                if len(edge.optical_fibres) > 0:
+                    node_start = edge.start.id
+                    node_end = edge.end.id
+
+                    if node_start in adjacency_list:
+                        if type(adjacency_list[node_start]) == set:
+                            adjacency_list[node_start].add(node_end)
+                    else:
+                        adjacency_list[node_start] = set()
+                        adjacency_list[node_start].add(node_end)
+
+                    if node_end in adjacency_list:
+                        if type(adjacency_list[node_end]) == set:
+                            adjacency_list[node_end].add(node_start)
+                    else:
+                        adjacency_list[node_end] = set()
+                        adjacency_list[node_end].add(node_start)
+
+        for key,value in self.devices.items():
+            for dev in value:
+                if key.id in devices:
+                    if type(devices[key.id]) == list:
+                        devices[key.id].append(dev.id)
+                else:
+                    devices[key.id] = [dev.id]
+
+        
+        return (adjacency_list, devices, cost)
