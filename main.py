@@ -19,6 +19,8 @@ if __name__ == "__main__":
     sa_param.max_iterations = 50
     sa_param.max_subiterations = 10
     sa_param.alpha = 0.98
+    sa_param.cooling_schedule = 'linear additive'   # Choose from: linear additive, linear multiplicative, quadratic additive, 
+                                                    # exponential multiplicative, logarithmical multiplicative or None if you want constant temperature
 
     sa = SimulatedAnnealing(network,sa_param)
     sa.run_alghoritm()

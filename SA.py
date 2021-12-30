@@ -34,6 +34,7 @@ class SA_parameters:
         self.max_iterations = 50
         self.max_subiterations = 10
         self.alpha = 0.98
+        self.cooling_schedule = 'linear additive'
 
 class SimulatedAnnealing:
     def __init__(self, network: OpticalFibreNetwork, param: SA_parameters) -> None:
@@ -270,28 +271,44 @@ class SimulatedAnnealing:
         else:
             return True
 
-    def calculate_temperature_linear_additive(self,i) -> float:
-        temp = self.parameters.max_temperature * ((self.parameters.max_iterations - i)/self.parameters.max_iterations)
-        self.temperature_history.append(temp)
-        return temp
+    def cooling_linear_additive(self,i) -> float:
+        return self.parameters.max_temperature * ((self.parameters.max_iterations - i)/self.parameters.max_iterations)
 
-    def calculate_temperature_linear_multiplicative(self,i) -> float:
-        temp = self.parameters.max_temperature /  (1 + self.parameters.alpha * i)
-        self.temperature_history.append(temp)
-        return temp
+    def cooling_linear_multiplicative(self,i) -> float:
+        return self.parameters.max_temperature /  (1 + self.parameters.alpha * i)
     
-    def calculate_temperature_quadratic_additive(self,i) -> float:
-        temp = self.parameters.max_temperature * ((self.parameters.max_iterations - i)/self.parameters.max_iterations)**2
-        self.temperature_history.append(temp)
-        return temp
+    def cooling_quadratic_additive(self,i) -> float:
+        return self.parameters.max_temperature * ((self.parameters.max_iterations - i)/self.parameters.max_iterations)**2
     
-    def calculate_temperature_exponential_multiplicative(self,i) -> float:
-        temp = self.parameters.max_temperature * self.parameters.alpha**i
-        self.temperature_history.append(temp)
-        return temp
+    def cooling_exponential_multiplicative(self,i) -> float:
+        return self.parameters.max_temperature * self.parameters.alpha**i
 
-    def calculate_temperature_logarithmical_multiplicative(self,i) -> float:
-        temp = self.parameters.max_temperature / (self.parameters.alpha * math.log(i + 1))
+    def cooling_logarithmical_multiplicative(self,i) -> float:
+        return self.parameters.max_temperature / (self.parameters.alpha * math.log(i + 1))
+
+    def constant_temperature(self):
+        return self.parameters.max_temperature
+       
+    def calculate_temperature(self, num_of_iteration):
+        cooling = self.parameters.cooling_schedule
+        if cooling == 'linear additive':
+            temp = self.cooling_linear_additive(num_of_iteration)
+
+        elif cooling == 'linear multiplicative':
+            temp = self.cooling_linear_multiplicative(num_of_iteration)
+
+        elif cooling == 'quadratic additive':
+            temp = self.cooling_quadratic_additive(num_of_iteration)
+        
+        elif cooling == 'exponential multiplicative':
+            temp = self.cooling_exponential_multiplicative(num_of_iteration)
+        
+        elif cooling == 'logarithmical multiplicative':
+            temp = self.cooling_logarithmical_multiplicative(num_of_iteration)
+        
+        elif cooling == None:
+            temp = self.constant_temperature()
+
         self.temperature_history.append(temp)
         return temp
 
@@ -365,7 +382,7 @@ class SimulatedAnnealing:
 
                     self.objective_function_history.append(self.temporary_solution.cost)
             iterations += 1
-            T = self.calculate_temperature_logarithmical_multiplicative(iterations)
+            T = self.calculate_temperature(iterations)
 
     def get_objective_function_history(self) -> float:
         return self.objective_function_history
