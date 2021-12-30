@@ -46,6 +46,8 @@ class SimulatedAnnealing:
 
         self.parameters = param
 
+        self.temperature_history = []
+
         self.objective_function_history = []
         self.realizations = [0, 0, 0] # [buildings updates, poles updates, devices updates]
         self.quality_changes = [0, 0, 0] # [worse objective function cost (not accepted), worse objective function cost (accepted), better objective function cost]
@@ -268,8 +270,10 @@ class SimulatedAnnealing:
         else:
             return True
 
-    def calculate_temperature(self,i) -> float:
-        return self.parameters.max_temperature * ((self.parameters.max_iterations - i)/self.parameters.max_iterations)
+    def calculate_temperature_linear(self,i) -> float:
+        temp = self.parameters.max_temperature * ((self.parameters.max_iterations - i)/self.parameters.max_iterations)
+        self.temperature_history.append(temp)
+        return temp
         # return self.max_temperature /  (1 + self.alpha * i)
 
     def run_alghoritm(self) -> None:
@@ -342,10 +346,14 @@ class SimulatedAnnealing:
 
                     self.objective_function_history.append(self.temporary_solution.cost)
             iterations += 1
-            T = self.calculate_temperature(iterations)
+            T = self.calculate_temperature_linear(iterations)
 
     def get_objective_function_history(self) -> float:
         return self.objective_function_history
+
+    def get_temperature_history(self) -> list:
+        return self.temperature_history
+    
 
 
 

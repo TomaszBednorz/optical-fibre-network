@@ -37,11 +37,22 @@ if __name__ == "__main__":
         print("{} : {}".format(key, value))
 
     history = sa.get_objective_function_history()
+
+    plt.figure(1)
     plt.plot(history)
     plt.grid()
     plt.xlabel("Iteration")
     plt.ylabel("Cost")
     plt.title("Objective function cost in time")
+
+    temperature = sa.get_temperature_history()
+
+    plt.figure(2)
+    plt.plot(temperature)
+    plt.grid()
+    plt.xlabel("Iteration")
+    plt.ylabel("Temperature")
+    plt.title("Temperature in time")
     plt.show()
 
     # print("Buildings updates: {}".format(sa.realizations[0]))
