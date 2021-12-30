@@ -7,8 +7,8 @@ import sys
 if __name__ == "__main__":
     network = OpticalFibreNetwork()
     network.add_starting_point(50.16429619810853, 19.626773362067187)
-    network.add_buildings_from_txt('buildings_for_tests.txt')
-    network.add_poles_from_txt('poles_for_tests.txt')
+    network.add_buildings_from_txt('tests/test1_buildings.txt')
+    network.add_poles_from_txt('tests/test1_poles.txt')
 
 
     sa_param = SA_parameters()
@@ -44,17 +44,17 @@ if __name__ == "__main__":
     plt.title("Objective function cost in time")
     plt.show()
 
-    print("Buildings updates: {}".format(sa.realizations[0]))
-    print("Poles updates: {}".format(sa.realizations[1]))
-    print("Devices updates: {}".format(sa.realizations[2]))
+    # print("Buildings updates: {}".format(sa.realizations[0]))
+    # print("Poles updates: {}".format(sa.realizations[1]))
+    # print("Devices updates: {}".format(sa.realizations[2]))
 
-    iterations = sa_param.max_iterations * sa_param.max_subiterations
-    print("Worse cost (not accepted): {}  {:.3}%".format(sa.quality_changes[0], sa.quality_changes[0]/ iterations))
-    print("Worse cost (accepted): {}  {:.3}%".format(sa.quality_changes[1], sa.quality_changes[1]/ iterations))
-    print("Better cost: {}  {:.3}%".format(sa.quality_changes[2], sa.quality_changes[2]/ iterations))
+    # iterations = sa_param.max_iterations * sa_param.max_subiterations
+    # print("Worse cost (not accepted): {}  {:.3}%".format(sa.quality_changes[0], sa.quality_changes[0]/ iterations))
+    # print("Worse cost (accepted): {}  {:.3}%".format(sa.quality_changes[1], sa.quality_changes[1]/ iterations))
+    # print("Better cost: {}  {:.3}%".format(sa.quality_changes[2], sa.quality_changes[2]/ iterations))
 
-    print("Worse cost (not accepted): {}".format(sa.quality_changes_it['worse_not_acepted']))
-    print("Worse cost (accepted): {}".format(sa.quality_changes_it['worse_accepted']))
-    print("Better cost: {}".format(sa.quality_changes_it['better']))
+    # print("Worse cost (not accepted): {}".format(sa.quality_changes_it['worse_not_acepted']))
+    # print("Worse cost (accepted): {}".format(sa.quality_changes_it['worse_accepted']))
+    # print("Better cost: {}".format(sa.quality_changes_it['better']))
 
     
