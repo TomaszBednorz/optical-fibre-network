@@ -18,7 +18,7 @@ if __name__ == "__main__":
     sa_param.max_temperature = 100
     sa_param.max_iterations = 50
     sa_param.max_subiterations = 10
-    sa_param.alpha = 100
+    sa_param.alpha = 0.98
 
     sa = SimulatedAnnealing(network,sa_param)
     sa.run_alghoritm()
