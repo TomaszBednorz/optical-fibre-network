@@ -319,7 +319,8 @@ class SimulatedAnnealing:
         while not sol_corect:
             self.create_beginning_solution()
             sol_corect = self.check_network_correctness(self.actual_solution)
-        self.actual_solution.visualization2(True,False) 
+        self.actual_solution.visualization2(True,False, "before.html") 
+        self.actual_solution.visualization(True,False, "before2.html") 
         iterations = 0
         L = self.parameters.max_subiterations
         T = self.parameters.max_temperature
@@ -357,7 +358,7 @@ class SimulatedAnnealing:
                     local_iterations += 1
                     self.temporary_solution.calculate_objective_function()
                     self.actual_solution.calculate_objective_function()
-                    print("Iteration: {} Objective function cost: {}".format(iterations*10+local_iterations, self.temporary_solution.cost))
+                    print("Iteration: {} Objective function cost: {}".format(iterations*self.parameters.max_subiterations+local_iterations, self.temporary_solution.cost))
 
                     if 1 <= number <=10:
                         self.realizations[0] += 1
