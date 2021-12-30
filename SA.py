@@ -31,9 +31,9 @@ class SA_parameters:
         self.poles = True
         self.devices = True
         self.max_temperature = 100
-        self.max_iterations = 100
+        self.max_iterations = 50
         self.max_subiterations = 10
-        self.alpha = 100
+        self.alpha = 0.98
 
 class SimulatedAnnealing:
     def __init__(self, network: OpticalFibreNetwork, param: SA_parameters) -> None:
@@ -45,6 +45,8 @@ class SimulatedAnnealing:
         self.temporary_solution = None
 
         self.parameters = param
+
+        self.temperature_history = []
 
         self.objective_function_history = []
         self.realizations = [0, 0, 0] # [buildings updates, poles updates, devices updates]
@@ -268,9 +270,30 @@ class SimulatedAnnealing:
         else:
             return True
 
-    def calculate_temperature(self,i) -> float:
-        return self.parameters.max_temperature * ((self.parameters.max_iterations - i)/self.parameters.max_iterations)
-        # return self.max_temperature /  (1 + self.alpha * i)
+    def calculate_temperature_linear_additive(self,i) -> float:
+        temp = self.parameters.max_temperature * ((self.parameters.max_iterations - i)/self.parameters.max_iterations)
+        self.temperature_history.append(temp)
+        return temp
+
+    def calculate_temperature_linear_multiplicative(self,i) -> float:
+        temp = self.parameters.max_temperature /  (1 + self.parameters.alpha * i)
+        self.temperature_history.append(temp)
+        return temp
+    
+    def calculate_temperature_quadratic_additive(self,i) -> float:
+        temp = self.parameters.max_temperature * ((self.parameters.max_iterations - i)/self.parameters.max_iterations)**2
+        self.temperature_history.append(temp)
+        return temp
+    
+    def calculate_temperature_exponential_multiplicative(self,i) -> float:
+        temp = self.parameters.max_temperature * self.parameters.alpha**i
+        self.temperature_history.append(temp)
+        return temp
+
+    def calculate_temperature_logarithmical_multiplicative(self,i) -> float:
+        temp = self.parameters.max_temperature / (self.parameters.alpha * math.log(i + 1))
+        self.temperature_history.append(temp)
+        return temp
 
     def run_alghoritm(self) -> None:
         self.realizations = [0, 0, 0]
@@ -342,10 +365,14 @@ class SimulatedAnnealing:
 
                     self.objective_function_history.append(self.temporary_solution.cost)
             iterations += 1
-            T = self.calculate_temperature(iterations)
+            T = self.calculate_temperature_logarithmical_multiplicative(iterations)
 
     def get_objective_function_history(self) -> float:
         return self.objective_function_history
+
+    def get_temperature_history(self) -> list:
+        return self.temperature_history
+    
 
 
 
