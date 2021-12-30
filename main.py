@@ -7,8 +7,8 @@ import sys
 if __name__ == "__main__":
     network = OpticalFibreNetwork()
     network.add_starting_point(50.16429619810853, 19.626773362067187)
-    network.add_buildings_from_txt('tests/test1_buildings.txt')
-    network.add_poles_from_txt('tests/test1_poles.txt')
+    network.add_buildings_from_txt('buildings.txt')
+    network.add_poles_from_txt('poles.txt')
 
 
     sa_param = SA_parameters()

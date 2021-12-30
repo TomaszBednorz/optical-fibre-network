@@ -199,7 +199,7 @@ class SimulatedAnnealing:
             return False
 
     def check_fibers_correctness(self,network: OpticalFibreNetwork) -> bool:
-        s = network.START_POINT.id                                  # Checking optical fibers, Bellman-Ford algorithm
+        s = network.START_POINT.id      # Checking optical fibers, Bellman-Ford algorithm
         d = dict()            
         p = dict()
 
@@ -214,27 +214,24 @@ class SimulatedAnnealing:
                 for edge in network.edges[node]:
                     if edge.type != None:
                         if node.id == edge.start.id:
-                            if d[edge.end.id] > d[node.id] + edge.distance:   
-                                d[edge.end.id] =  d[node.id] + edge.distance
-                                p[edge.end.id] = node.id
+                            if edge.type == FiberType.SEWERAGE:
+                                if d[edge.end.id] > d[node.id] + 10 * edge.distance:   
+                                    d[edge.end.id] =  d[node.id] + 10 * edge.distance
+                                    p[edge.end.id] = node.id
+                            else:
+                                if d[edge.end.id] > d[node.id] + edge.distance:   
+                                    d[edge.end.id] =  d[node.id] + edge.distance
+                                    p[edge.end.id] = node.id
+
                         elif node.id == edge.end.id:
-                            if d[edge.start.id] > d[node.id] + edge.distance:    
-                                d[edge.start.id] =  d[node.id] + edge.distance
-                                p[edge.start.id] = node.id
-        
-        for node in network.all_nodes:   
-            for edge in network.edges[node]:
-                if edge.type != None:
-                    if node.id == edge.start.id:
-                        if d[edge.end.id] <= d[node.id] + edge.distance:   
-                            continue
-                        else:
-                            print("Cykl ujemny!")
-                    elif node.id == edge.end.id:
-                        if d[edge.start.id] <= d[node.id] + edge.distance:   
-                            continue
-                        else:
-                            print("Cykl ujemny!")
+                            if edge.type == FiberType.SEWERAGE:
+                                if d[edge.start.id] > d[node.id] + 10 * edge.distance:    
+                                    d[edge.start.id] =  d[node.id] + 10 * edge.distance
+                                    p[edge.start.id] = node.id
+                            else:
+                                if d[edge.start.id] > d[node.id] + edge.distance:    
+                                    d[edge.start.id] =  d[node.id] + edge.distance
+                                    p[edge.start.id] = node.id
 
         edges_ = {}
         list_edges = network.dct_to_list()
