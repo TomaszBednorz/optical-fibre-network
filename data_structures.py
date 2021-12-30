@@ -381,7 +381,7 @@ class OpticalFibreNetwork:
                     best_node_4th_q = node
             self.add_edge(current_node, best_node_4th_q)
 
-    def visualization(self, show_id = False, show_empty_edge = False) -> None:
+    def visualization(self, show_id = False, show_empty_edge = False, filename = 'map.html') -> None:
         # Create the map plotter:
         apikey = 'AIzaSyBal6A70lGi745Rm8Fdk0o5FZEleeHhBLI' # (your API key here)
         gmap = gmplot.GoogleMapPlotter(50.165997404672005, 19.625832486967628, 17, apikey=apikey)
@@ -434,9 +434,9 @@ class OpticalFibreNetwork:
         gmap.scatter([self.START_POINT.vert_coord], [self.START_POINT.hori_coord], color='darkviolet', size=3, marker=False,alpha = 1,symbol = '+')
 
         # Draw the map to an HTML file:
-        gmap.draw('map.html')
+        gmap.draw(filename)
 
-    def visualization2(self, show_id = False, show_empty_edge = False) -> None:
+    def visualization2(self, show_id = False, show_empty_edge = False, filename = "map.html") -> None:
         # Create the map plotter:
         apikey = 'AIzaSyBal6A70lGi745Rm8Fdk0o5FZEleeHhBLI' # (your API key here)
         gmap = gmplot.GoogleMapPlotter(50.165997404672005, 19.625832486967628, 17, apikey=apikey)
@@ -505,7 +505,7 @@ class OpticalFibreNetwork:
         gmap.scatter([self.START_POINT.vert_coord], [self.START_POINT.hori_coord], color='darkviolet', size=3, marker=False,alpha = 1,symbol = '+')
 
         # Draw the map to an HTML file:
-        gmap.draw('map.html')
+        gmap.draw(filename)
 
     def get_simple_solution(self):
         # Form of solution: (Edges, Devices, Cost)
