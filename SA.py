@@ -295,6 +295,11 @@ class SimulatedAnnealing:
         self.temperature_history.append(temp)
         return temp
 
+    def constant_temperature(self):
+        temp = self.parameters.max_temperature
+        self.temperature_history.append(temp)
+        return temp
+
     def run_alghoritm(self) -> None:
         self.realizations = [0, 0, 0]
         self.quality_changes = [0, 0, 0]
@@ -365,7 +370,8 @@ class SimulatedAnnealing:
 
                     self.objective_function_history.append(self.temporary_solution.cost)
             iterations += 1
-            T = self.calculate_temperature_logarithmical_multiplicative(iterations)
+            # T = self.calculate_temperature_logarithmical_multiplicative(iterations)
+            T = self.constant_temperature()
 
     def get_objective_function_history(self) -> float:
         return self.objective_function_history

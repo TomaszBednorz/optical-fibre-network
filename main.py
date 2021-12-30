@@ -15,7 +15,7 @@ if __name__ == "__main__":
     sa_param.buildings = True
     sa_param.poles = True
     sa_param.devices = True
-    sa_param.max_temperature = 100
+    sa_param.max_temperature = 5000 # 100
     sa_param.max_iterations = 50
     sa_param.max_subiterations = 10
     sa_param.alpha = 0.98
