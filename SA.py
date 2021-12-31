@@ -370,14 +370,14 @@ class SimulatedAnnealing:
                         self.actual_solution = self.temporary_solution
                         self.best_solution = self.actual_solution
                         self.quality_changes[2] += 1
-                        self.quality_changes_it['better'].append(iterations*10+local_iterations)
-                    elif np.exp(-(self.temporary_solution.get_cost() - self.actual_solution.get_cost())/ T) > random.random():
+                        self.quality_changes_it['better'].append(iterations*self.parameters.max_subiterations+local_iterations)
+                    elif np.exp(-(self.temporary_solution.get_cost() - self.actual_solution.get_cost())/ T) > random.random() / 100:
                         self.actual_solution = self.temporary_solution
                         self.quality_changes[1] += 1
-                        self.quality_changes_it['worse_accepted'].append(iterations*10+local_iterations)
+                        self.quality_changes_it['worse_accepted'].append(iterations*self.parameters.max_subiterations+local_iterations)
                     else:
                         self.quality_changes[0] += 1
-                        self.quality_changes_it['worse_not_acepted'].append(iterations*10+local_iterations)
+                        self.quality_changes_it['worse_not_acepted'].append(iterations*self.parameters.max_subiterations+local_iterations)
 
                     self.temperature_history.append(T)
                     self.objective_function_history.append(self.temporary_solution.cost)
