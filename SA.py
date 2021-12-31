@@ -309,7 +309,6 @@ class SimulatedAnnealing:
         elif cooling == None:
             temp = self.constant_temperature()
 
-        self.temperature_history.append(temp)
         return temp
 
     def run_alghoritm(self) -> None:
@@ -380,7 +379,7 @@ class SimulatedAnnealing:
                         self.quality_changes[0] += 1
                         self.quality_changes_it['worse_not_acepted'].append(iterations*10+local_iterations)
 
-
+                    self.temperature_history.append(T)
                     self.objective_function_history.append(self.temporary_solution.cost)
             iterations += 1
             T = self.calculate_temperature(iterations)
