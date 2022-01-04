@@ -48,7 +48,7 @@ class SA_parameters:
             print("Error! Iterations cannot be negative!")
             exit()
         else:
-            self.max_temperature = iterations
+            self.max_iterations = iterations
             self.max_subiterations = subiterations
 
     def set_alpha(self, alpha: float):
@@ -57,6 +57,15 @@ class SA_parameters:
         else:
             print("Error! Alpha must be between 0 and 1!")
             exit()
+
+    def set_cooling_schedule(self, cooling_schedule: str):
+        list_str = ["linear additive", "linear multiplicative", "quadratic additive", "exponential multiplicative", "logarithmical multiplicative", None]
+        if cooling_schedule not in list_str:
+            print("Error! Select cooling from the list!")
+            print(list_str)
+            exit()
+        else:
+            self.cooling_schedule = cooling_schedule
     
 class SimulatedAnnealing:
     def __init__(self, network: OpticalFibreNetwork, param: SA_parameters) -> None:

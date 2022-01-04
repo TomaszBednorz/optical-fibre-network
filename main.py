@@ -18,7 +18,7 @@ if __name__ == "__main__":
     sa_param.set_temperature(1000)
     sa_param.set_iterations(10,50)
     sa_param.set_alpha(0.98)
-    sa_param.cooling_schedule = 'linear additive'   # Choose from: linear additive, linear multiplicative, quadratic additive, 
+    sa_param.set_cooling_schedule('linear additive')   # Choose from: linear additive, linear multiplicative, quadratic additive, 
                                                     # exponential multiplicative, logarithmical multiplicative or None if you want constant temperature
 
     sa = SimulatedAnnealing(network,sa_param)
