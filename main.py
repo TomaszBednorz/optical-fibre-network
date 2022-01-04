@@ -15,10 +15,9 @@ if __name__ == "__main__":
     sa_param.buildings = True
     sa_param.poles = True
     sa_param.devices = True
-    sa_param.max_temperature = 100
-    sa_param.max_iterations = 50
-    sa_param.max_subiterations = 10
-    sa_param.alpha = 0.98
+    sa_param.set_temperature(1000)
+    sa_param.set_iterations(10,50)
+    sa_param.set_alpha(0.98)
     sa_param.cooling_schedule = 'linear additive'   # Choose from: linear additive, linear multiplicative, quadratic additive, 
                                                     # exponential multiplicative, logarithmical multiplicative or None if you want constant temperature
 
@@ -57,14 +56,14 @@ if __name__ == "__main__":
     plt.title("Temperature in time")
     plt.show()
 
-    # print("Buildings updates: {}".format(sa.realizations[0]))
-    # print("Poles updates: {}".format(sa.realizations[1]))
-    # print("Devices updates: {}".format(sa.realizations[2]))
+    print("Buildings updates: {}".format(sa.realizations[0]))
+    print("Poles updates: {}".format(sa.realizations[1]))
+    print("Devices updates: {}".format(sa.realizations[2]))
 
-    # iterations = sa_param.max_iterations * sa_param.max_subiterations
-    # print("Worse cost (not accepted): {}  {:.3}%".format(sa.quality_changes[0], sa.quality_changes[0]/ iterations))
-    # print("Worse cost (accepted): {}  {:.3}%".format(sa.quality_changes[1], sa.quality_changes[1]/ iterations))
-    # print("Better cost: {}  {:.3}%".format(sa.quality_changes[2], sa.quality_changes[2]/ iterations))
+    iterations = sa_param.max_iterations * sa_param.max_subiterations
+    print("Worse cost (not accepted): {}  {:.3}%".format(sa.quality_changes[0], sa.quality_changes[0]/ iterations))
+    print("Worse cost (accepted): {}  {:.3}%".format(sa.quality_changes[1], sa.quality_changes[1]/ iterations))
+    print("Better cost: {}  {:.3}%".format(sa.quality_changes[2], sa.quality_changes[2]/ iterations))
 
     # print("Worse cost (not accepted): {}".format(sa.quality_changes_it['worse_not_acepted']))
     # print("Worse cost (accepted): {}".format(sa.quality_changes_it['worse_accepted']))
