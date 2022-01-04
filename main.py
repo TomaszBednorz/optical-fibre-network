@@ -16,7 +16,7 @@ if __name__ == "__main__":
     sa_param.poles = True
     sa_param.devices = True
     sa_param.set_temperature(1000)
-    sa_param.set_iterations(10,50)
+    sa_param.set_iterations(10,10) #Change to 50, 10
     sa_param.set_alpha(0.98)
     sa_param.set_cooling_schedule('linear additive')   # Choose from: linear additive, linear multiplicative, quadratic additive, 
                                                     # exponential multiplicative, logarithmical multiplicative or None if you want constant temperature
@@ -69,4 +69,6 @@ if __name__ == "__main__":
     # print("Worse cost (accepted): {}".format(sa.quality_changes_it['worse_accepted']))
     # print("Better cost: {}".format(sa.quality_changes_it['better']))
 
+    network.save_buildings_to_txt('buildings.txt')
+    network.save_poles_to_txt('poles.txt')
     

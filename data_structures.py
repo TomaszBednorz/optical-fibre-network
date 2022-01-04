@@ -162,10 +162,13 @@ class OpticalFibreNetwork:
 
     def add_buildings_from_txt(self, filename: str) -> None:
         with open(filename, 'r') as f:
-            for line in f.readlines():
-                line.strip()
-                v_c, h_c, id = line.split(" ", 2)
-                self.add_building(float(v_c), float(h_c), int(id))
+            lines = (line.rstrip() for line in f)
+            lines = (line for line in lines if line)
+            for line in lines:
+                splitted = line.split(" ")
+                if len(splitted) == 3:
+                    v_c, h_c, id = line.split(" ", 2)
+                    self.add_building(float(v_c), float(h_c), int(id))
     
     def save_buildings_to_txt(self, filename = None) -> None:
         with open(filename, "w") as f:
@@ -186,10 +189,13 @@ class OpticalFibreNetwork:
 
     def add_poles_from_txt(self, filename: str) -> None:
         with open(filename, 'r') as f:
-            for line in f.readlines():
-                line.strip()
-                v_c, h_c, id = line.split(" ", 2)
-                self.add_pole(float(v_c), float(h_c), int(id))
+            lines = (line.rstrip() for line in f)
+            lines = (line for line in lines if line)
+            for line in lines:
+                splitted = line.split(" ")
+                if len(splitted) == 3:
+                    v_c, h_c, id = line.split(" ", 2)
+                    self.add_pole(float(v_c), float(h_c), int(id))
 
     def save_poles_to_txt(self, filename: str) -> None:
         with open(filename, "w") as f:
