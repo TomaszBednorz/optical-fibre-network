@@ -3,22 +3,26 @@ from SA import *
 import matplotlib.pyplot as plt
 import sys
 
+import time
+
+start = time.time()
+
 
 if __name__ == "__main__":
     network = OpticalFibreNetwork()
     network.add_starting_point(50.16429619810853, 19.626773362067187)
-    network.add_buildings_from_txt('buildings.txt')
-    network.add_poles_from_txt('poles.txt')
+    network.add_buildings_from_txt('tests/21_p_statically_neutral_cases.txt')
+    network.add_poles_from_txt('tests/21_b_statically_neutral_cases.txt')
 
 
     sa_param = SA_parameters()
     sa_param.buildings = True
     sa_param.poles = True
     sa_param.devices = True
-    sa_param.set_temperature(1000)
-    sa_param.set_iterations(10,10) #Change to 50, 10
+    sa_param.set_temperature(100)
+    sa_param.set_iterations(100,10) #Change to 50, 10
     sa_param.set_alpha(0.98)
-    sa_param.set_cooling_schedule('linear additive')   # Choose from: linear additive, linear multiplicative, quadratic additive, 
+    sa_param.set_cooling_schedule('logarithmical multiplicative')   # Choose from: linear additive, linear multiplicative, quadratic additive, 
                                                     # exponential multiplicative, logarithmical multiplicative or None if you want constant temperature
 
     sa = SimulatedAnnealing(network,sa_param)
@@ -38,7 +42,32 @@ if __name__ == "__main__":
         print("{} : {}".format(key, value))
 
     history = sa.get_objective_function_history()
+    end = time.time()
+    
+    print(" ")
 
+    print("Buildings updates: {}".format(sa.realizations[0]))
+    print("Poles updates: {}".format(sa.realizations[1]))
+    print("Devices updates: {}".format(sa.realizations[2]))
+
+    iterations = sa_param.max_iterations * sa_param.max_subiterations
+    print(" ")
+    print("Objective function cost: {} zł".format(sa.best_solution.cost))
+    print("Worse cost (not accepted): {}  {:.3}%".format(sa.quality_changes[0], 100*sa.quality_changes[0]/ iterations))
+    print("Worse cost (accepted): {}  {:.3}%".format(sa.quality_changes[1], 100*sa.quality_changes[1]/ iterations))
+    print("Better cost: {}  {:.3}%".format(sa.quality_changes[2], 100*sa.quality_changes[2]/ iterations))
+    print(" ")
+
+    # print("Worse cost (not accepted): {}".format(sa.quality_changes_it['worse_not_acepted']))
+    # print("Worse cost (accepted): {}".format(sa.quality_changes_it['worse_accepted']))
+    # print("Better cost: {}".format(sa.quality_changes_it['better']))
+
+    # network.save_buildings_to_txt('buildings.txt')
+    # network.save_poles_to_txt('poles.txt')
+    
+
+    
+    print(end - start)
     plt.figure(1)
     plt.plot(history)
     plt.grid()
@@ -56,19 +85,3 @@ if __name__ == "__main__":
     plt.title("Temperature in time")
     plt.show()
 
-    print("Buildings updates: {}".format(sa.realizations[0]))
-    print("Poles updates: {}".format(sa.realizations[1]))
-    print("Devices updates: {}".format(sa.realizations[2]))
-
-    iterations = sa_param.max_iterations * sa_param.max_subiterations
-    print("Worse cost (not accepted): {}  {:.3}%".format(sa.quality_changes[0], sa.quality_changes[0]/ iterations))
-    print("Worse cost (accepted): {}  {:.3}%".format(sa.quality_changes[1], sa.quality_changes[1]/ iterations))
-    print("Better cost: {}  {:.3}%".format(sa.quality_changes[2], sa.quality_changes[2]/ iterations))
-
-    # print("Worse cost (not accepted): {}".format(sa.quality_changes_it['worse_not_acepted']))
-    # print("Worse cost (accepted): {}".format(sa.quality_changes_it['worse_accepted']))
-    # print("Better cost: {}".format(sa.quality_changes_it['better']))
-
-    network.save_buildings_to_txt('buildings.txt')
-    network.save_poles_to_txt('poles.txt')
-    

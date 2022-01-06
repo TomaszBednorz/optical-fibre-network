@@ -113,7 +113,17 @@ class SimulatedAnnealing:
             num_of_iterations = 100
         elif(len(self.actual_solution.buildings)) <= 50:
             num_of_iterations = 200
-
+        elif(len(self.actual_solution.buildings)) <= 100:
+            num_of_iterations = 400
+        elif(len(self.actual_solution.buildings)) <= 200:
+            num_of_iterations = 500
+        elif(len(self.actual_solution.buildings)) <= 500:
+            num_of_iterations = 1500
+        elif(len(self.actual_solution.buildings)) <= 1000:
+            num_of_iterations = 3000
+        elif(len(self.actual_solution.buildings)) > 1000:
+            # print("Size of the problem is too big!")
+            num_of_iterations = 5000
 
         while len(visited_buildings) < len(self.actual_solution.buildings):
             rand_num = random.randint(0, len(node_edges) - 1)
@@ -349,8 +359,10 @@ class SimulatedAnnealing:
         while not sol_corect:
             self.create_beginning_solution()
             sol_corect = self.check_network_correctness(self.actual_solution)
+            print('1')
         self.actual_solution.visualization2(True,False, "before.html") 
         self.actual_solution.visualization(True,False, "before2.html") 
+        self.best_solution = self.actual_solution
         iterations = 0
         L = self.parameters.max_subiterations
         T = self.parameters.max_temperature
@@ -399,7 +411,8 @@ class SimulatedAnnealing:
 
                     if self.temporary_solution.cost <= self.actual_solution.cost:
                         self.actual_solution = self.temporary_solution
-                        self.best_solution = self.actual_solution
+                        if self.best_solution.cost > self.actual_solution.cost:
+                            self.best_solution = self.actual_solution
                         self.quality_changes[2] += 1
                         self.quality_changes_it['better'].append(iterations*self.parameters.max_subiterations+local_iterations)
                     elif np.exp(-(self.temporary_solution.get_cost() - self.actual_solution.get_cost())/ T) > random.random() / 100:
