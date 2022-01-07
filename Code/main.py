@@ -11,8 +11,8 @@ start = time.time()
 if __name__ == "__main__":
     network = OpticalFibreNetwork()
     network.add_starting_point(50.16429619810853, 19.626773362067187)
-    network.add_buildings_from_txt('tests/21_p_statically_neutral_cases.txt')
-    network.add_poles_from_txt('tests/21_b_statically_neutral_cases.txt')
+    network.add_buildings_from_txt('../Data/buildings_for_tests.txt')
+    network.add_poles_from_txt('../Data/poles_for_tests.txt')
 
 
     sa_param = SA_parameters()
