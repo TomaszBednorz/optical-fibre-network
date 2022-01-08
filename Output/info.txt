@@ -1,0 +1,34 @@
+sol1:
+
+../Tests/buildings_S.txt 
+../Tests/poles_S.txt
+
+Punkt startowy: 50.16429619810853, 19.626773362067187
+
+- alfa: 0.98
+- ilość iteracji: 500
+- ilość poditeracji: 10
+- temperatura startowa 100
+- schemat schładzania: schładzanie liniowe stałe
+- metody optymalizacji (sąsiedztwa) : budynki, słupy, urządzenia (wszystkie)
+
+Początkowa wartość funkcji celu: 125185.49 zł
+Końcowa wartość funkcji celu: 18192.73 zł
+
+sol2:
+
+../Tests/buildings_L.txt 
+../Tests/poles_L.txt
+
+Punkt startowy: 50.16429619810853, 19.626773362067187
+
+- alfa: 0.98
+- ilość iteracji: 800
+- ilość poditeracji: 10
+- temperatura startowa 100
+- schemat schładzania: schładzanie liniowe stałe
+- metody optymalizacji (sąsiedztwa) : budynki, słupy, urządzenia (wszystkie)
+
+Początkowa wartość funkcji celu: 484423.64 zł
+Końcowa wartość funkcji celu: 77370.37 zł
+
