@@ -239,7 +239,9 @@ class OpticalFibreNetwork:
                 break  
             if len(self.devices[node]) == 0:
                 del self.devices[node]
-        self.devices_idxs.remove(idx)
+        if idx in self.devices_idxs:
+            self.devices_idxs.remove(idx)
+
         self.devices_idxs.sort()
 
     def add_edge(self, node_start: Node, node_end: Node) -> None:
