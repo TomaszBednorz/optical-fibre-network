@@ -23,12 +23,12 @@ sol2:
 Punkt startowy: 50.16429619810853, 19.626773362067187
 
 - alfa: 0.98
-- ilość iteracji: 800
+- ilość iteracji: 600
 - ilość poditeracji: 10
 - temperatura startowa 100
 - schemat schładzania: schładzanie liniowe stałe
 - metody optymalizacji (sąsiedztwa) : budynki, słupy, urządzenia (wszystkie)
 
-Początkowa wartość funkcji celu: 484423.64 zł
-Końcowa wartość funkcji celu: 77370.37 zł
+Początkowa wartość funkcji celu: 478175.71 zł
+Końcowa wartość funkcji celu: 70462.94 zł
 

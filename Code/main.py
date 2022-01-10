@@ -11,23 +11,22 @@ start = time.time()
 if __name__ == "__main__":
     network = OpticalFibreNetwork()
     network.add_starting_point(50.16429619810853, 19.626773362067187)
-    network.add_buildings_from_txt('../Data/buildings_for_tests.txt')
-    network.add_poles_from_txt('../Data/poles_for_tests.txt')
-
+    network.add_buildings_from_txt('../Tests/buildings_S.txt ')
+    network.add_poles_from_txt('../Tests/poles_S.txt ')
 
     sa_param = SA_parameters()
     sa_param.buildings = True
     sa_param.poles = True
     sa_param.devices = True
     sa_param.set_temperature(100)
-    sa_param.set_iterations(100,10) #Change to 50, 10
+    sa_param.set_iterations(300,10) 
     sa_param.set_alpha(0.98)
-    sa_param.set_cooling_schedule('logarithmical multiplicative')   # Choose from: linear additive, linear multiplicative, quadratic additive, 
+    sa_param.set_cooling_schedule('linear additive')   # Choose from: linear additive, linear multiplicative, quadratic additive, 
                                                     # exponential multiplicative, logarithmical multiplicative or None if you want constant temperature
 
     sa = SimulatedAnnealing(network,sa_param)
     sa.run_alghoritm()
-    sa.best_solution.visualization(True,False) 
+    sa.best_solution.visualization(True,False, "after.html") 
     print("Objective function cost: {} zł".format(sa.best_solution.cost))
 
     simple_sol = sa.best_solution.get_simple_solution()
@@ -67,7 +66,7 @@ if __name__ == "__main__":
     
 
     
-    print(end - start)
+
     plt.figure(1)
     plt.plot(history)
     plt.grid()
@@ -85,3 +84,4 @@ if __name__ == "__main__":
     plt.title("Temperature in time")
     plt.show()
 
+    print("time: {} [s]".format(end - start))

@@ -359,9 +359,7 @@ class SimulatedAnnealing:
         while not sol_corect:
             self.create_beginning_solution()
             sol_corect = self.check_network_correctness(self.actual_solution)
-            print('1')
-        self.actual_solution.visualization2(True,False, "before.html") 
-        self.actual_solution.visualization(True,False, "before2.html") 
+        self.actual_solution.visualization(True,False, "before.html") 
         self.best_solution = self.actual_solution
         iterations = 0
         L = self.parameters.max_subiterations
