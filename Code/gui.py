@@ -49,10 +49,29 @@ from tkinter.messagebox import showinfo
 from tkinter import *
 class MyWindow:
     def __init__(self, win):
+
+        self.neighb1 = Label(win, text='Aktualizacja budynków:')
+        self.neighb1.place(x=50, y=300)
+        self.var1 = BooleanVar()
+        self.c1 = Checkbutton(window, variable=self.var1, onvalue=1, offvalue=0)
+        self.c1.place(x=200, y=300)
+
+        self.neighb2 = Label(win, text='Aktualizacja słupów:')
+        self.neighb2.place(x=50, y=350)
+        self.var2 = BooleanVar()
+        self.c2 = Checkbutton(window, variable=self.var2, onvalue=1, offvalue=0)
+        self.c2.place(x=200, y=350)
+
+        self.neighb3 = Label(win, text='Aktualizacja urządzeń:')
+        self.neighb3.place(x=50, y=400)
+        self.var3 = BooleanVar()
+        self.c3 = Checkbutton(window, variable=self.var3, onvalue=1, offvalue=0)
+        self.c3.place(x=200, y=400)
+
         self.lbl0=Label(win, text='Schemat wyżarzania:')
         self.lbl1=Label(win, text='Temperatura:')
         self.lbl2=Label(win, text='Liczba iteracji:')
-        self.lbl3=Label(win, text='Liczba iteracji w jednej temperaturze:')
+        self.lbl3=Label(win, text='Liczba iteracji w jednej\ntemperaturze:')
         self.lbl4=Label(win, text='Alfa:')
         self.t1=Entry(bd=3)
         self.t2=Entry(bd=3)
@@ -60,15 +79,15 @@ class MyWindow:
         self.t4=Entry(bd=3)
         self.btn1 = Button(win, text='Add')
         self.btn2=Button(win, text='Subtract')
-        self.lbl1.place(x=100, y=50)
-        self.t1.place(x=200, y=50)
-        self.lbl2.place(x=100, y=100)
-        self.t2.place(x=200, y=100)
-        self.lbl3.place(x=100, y=150)
-        self.t3.place(x=200, y=150)
-        self.lbl4.place(x=100, y=200)
-        self.t4.place(x=200, y=200)
-        self.lbl0.place(x=100, y=0)
+        self.lbl1.place(x=50, y=100)
+        self.t1.place(x=200, y=100)
+        self.lbl2.place(x=50, y=150)
+        self.t2.place(x=200, y=150)
+        self.lbl3.place(x=50, y=190)
+        self.t3.place(x=200, y=200)
+        self.lbl4.place(x=50, y=250)
+        self.t4.place(x=200, y=250)
+        self.lbl0.place(x=50, y=50)
         self.cooling = StringVar()
         self.anneling_chose = Combobox(window, width = 27, textvariable = self.cooling)
         # Adding combobox drop down list
@@ -79,13 +98,13 @@ class MyWindow:
                                 'logarithmical multiplicative',
                                 'None'
         )
-        self.anneling_chose.place(x=200, y=0)
+        self.anneling_chose.place(x=200, y=50)
         self.anneling_chose.current()
         print(self.anneling_chose)
         self.b1=Button(win, text='START', command=self.run_alghorithm)
         # self.b2=Button(win, text='Subtract')
         # self.b2.bind('<Button-1>', self.sub)
-        self.b1.place(x=100, y=250)
+        self.b1.place(x=50, y=450)
         # self.b2.place(x=200, y=150)
         # open button
         self.button_buildings = Button(win,width = 27, text='Wybierz plik z budynkami', command=self.select_file_buildings)
@@ -121,10 +140,14 @@ class MyWindow:
         network.add_buildings_from_txt(self.filename_buildings)
         network.add_poles_from_txt(self.filename_poles)
 
+        v1 = int(self.var1.get())
+        v2 = int(self.var2.get())
+        v3 = int(self.var3.get())
+
         sa_param = SA_parameters()
-        sa_param.buildings = True
-        sa_param.poles = True
-        sa_param.devices = True
+        sa_param.buildings = v1
+        sa_param.poles = v2
+        sa_param.devices = v3
         sa_param.set_temperature(num1) # 100
         sa_param.set_iterations(num2,num3) #Change to 100, 10
         sa_param.set_alpha(num4) #0.98
@@ -133,7 +156,7 @@ class MyWindow:
 
         sa = SimulatedAnnealing(network,sa_param)
         sa.run_alghoritm()
-        sa.best_solution.visualization(True,False) 
+        sa.best_solution.visualization(True,False, 'after.html') 
         print("Objective function cost: {} zł".format(sa.best_solution.cost))
         simple_sol = sa.best_solution.get_simple_solution()
         print("\nCost: {} zł".format(simple_sol[2]))
