@@ -52,19 +52,19 @@ class MyWindow:
 
         self.neighb1 = Label(win, text='Aktualizacja budynków:')
         self.neighb1.place(x=50, y=300)
-        self.var1 = BooleanVar()
+        self.var1 = BooleanVar(value=1)
         self.c1 = Checkbutton(window, variable=self.var1, onvalue=1, offvalue=0)
         self.c1.place(x=200, y=300)
 
         self.neighb2 = Label(win, text='Aktualizacja słupów:')
         self.neighb2.place(x=50, y=350)
-        self.var2 = BooleanVar()
+        self.var2 = BooleanVar(value=1)
         self.c2 = Checkbutton(window, variable=self.var2, onvalue=1, offvalue=0)
         self.c2.place(x=200, y=350)
 
         self.neighb3 = Label(win, text='Aktualizacja urządzeń:')
         self.neighb3.place(x=50, y=400)
-        self.var3 = BooleanVar()
+        self.var3 = BooleanVar(value=1)
         self.c3 = Checkbutton(window, variable=self.var3, onvalue=1, offvalue=0)
         self.c3.place(x=200, y=400)
 
@@ -77,8 +77,12 @@ class MyWindow:
         self.t2=Entry(bd=3)
         self.t3=Entry(bd=3)
         self.t4=Entry(bd=3)
-        self.btn1 = Button(win, text='Add')
-        self.btn2=Button(win, text='Subtract')
+        self.t1.insert(END, '500')
+        self.t2.insert(END, '100')
+        self.t3.insert(END, '10')
+        self.t4.insert(END, '0.98')
+        # self.btn1 = Button(win, text='Add')
+        # self.btn2=Button(win, text='Subtract')
         self.lbl1.place(x=50, y=100)
         self.t1.place(x=200, y=100)
         self.lbl2.place(x=50, y=150)
@@ -99,7 +103,7 @@ class MyWindow:
                                 'None'
         )
         self.anneling_chose.place(x=200, y=50)
-        self.anneling_chose.current()
+        self.anneling_chose.current(0)
         print(self.anneling_chose)
         self.b1=Button(win, text='START', command=self.run_alghorithm)
         # self.b2=Button(win, text='Subtract')
@@ -114,8 +118,8 @@ class MyWindow:
         self.button_poles.pack(expand=True)
         self.button_poles.place(x=400, y=100)
 
-        self.filename_buildings = 'Data/buildings.txt'
-        self.filename_poles = 'Data/poles.txt'
+        self.filename_buildings = 'Data/buildings_for_tests.txt'
+        self.filename_poles = 'Data/poles_for_tests.txt'
 
     def select_file_buildings(self):
         filetypes = (('text files', '*.txt'),('All files', '*.*'))
